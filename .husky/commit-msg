@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --no-install commitlint --edit "$1" || {
+  echo "\n❌  커밋 메시지가 규칙을 따르지 않습니다! 🚨"
+  echo "🔹 형식: [type]: [subject]"
+  echo "💡 예제: feat: 로그인 UI 개선"
+  echo "📌 사용 가능한 타입: 'build', 'chore', 'ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'revert', 'style', 'test'"
+  exit 1
+}
