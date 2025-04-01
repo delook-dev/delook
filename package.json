@@ -11,8 +11,7 @@
     "lint:fix": "eslint ./src --fix",
     "preview": "vite preview",
     "format": "prettier --check \"src/**/*\" --write",
-    "lint-staged": "lint-staged",
-    "prepare": "husky install"
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
@@ -44,7 +43,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "globals": "^15.15.0",
-    "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "lucide-react": "^0.486.0",
     "postcss": "^8.5.3",
