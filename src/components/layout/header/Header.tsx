@@ -51,12 +51,12 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="flex w-full overflow-x-auto border-b border-dashed border-border text-xs sm:justify-center sm:text-sm">
+      <nav className="flex w-full overflow-x-auto border-b border-dashed border-border sm:justify-center">
         {headerNavigation.map((nav) => (
           <Link
             className={`${
               activeNav(nav.href) ? 'text-primary' : ''
-            } min-w-[70px] py-2 text-center text-xs font-medium hover:opacity-70`}
+            }  min-w-[60px] p-2 text-center text-xs font-normal hover:opacity-90 sm:min-w-[96px] md:text-sm`}
             to={nav.href}
             key={nav.text}
           >
