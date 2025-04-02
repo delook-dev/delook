@@ -27,7 +27,7 @@ export default function Header() {
     <header className="sticky inset-x-0 top-0 z-10 bg-background/80 backdrop-blur-sm">
       <div className="relative flex flex-wrap items-center justify-between border-b border-dashed border-border px-3 md:-mx-5 md:px-6">
         <div className="flex items-center justify-center sm:flex-1 sm:translate-x-12">
-          <Link className="mx-auto py-3 pl-1" to="/">
+          <Link className="mx-auto py-3 pl-1 sm:pl-10" to="/">
             <IconLogo />
           </Link>
         </div>
@@ -50,20 +50,21 @@ export default function Header() {
           </IconButton>
         </div>
       </div>
-
-      <nav className="flex w-full overflow-x-auto border-b border-dashed border-border sm:justify-center">
-        {headerNavigation.map((nav) => (
-          <Link
-            className={`${
-              activeNav(nav.href) ? 'text-primary' : ''
-            }  min-w-[60px] p-2 text-center text-xs font-normal hover:opacity-90 sm:min-w-[96px] md:text-sm`}
-            to={nav.href}
-            key={nav.text}
-          >
-            {nav.text}
-          </Link>
-        ))}
-      </nav>
+      <div className="border-b border-dashed border-border">
+        <nav className="flex justify-start gap-6 overflow-auto px-4 sm:justify-center sm:px-0 md:mx-auto">
+          {headerNavigation.map((nav) => (
+            <Link
+              className={`${
+                activeNav(nav.href) ? 'text-primary' : ''
+              } py-2 text-center text-xs font-normal text-foreground/80 hover:opacity-90 sm:text-sm`}
+              to={nav.href}
+              key={nav.text}
+            >
+              {nav.text}
+            </Link>
+          ))}
+        </nav>
+      </div>
     </header>
   );
 }
