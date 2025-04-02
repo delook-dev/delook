@@ -11,6 +11,7 @@ module.exports = {
         'docs', // 문서 변경 (기여시 해당 메세지 작성)
         'feat', // 새로운 기능 추가
         'fix', // 버그 수정
+        'enhancement', //기존 기능 개선
         'perf', // 성능 개선
         'refactor', // 코드 리팩토링 (기능 변경 없이 코드 구조 개선)
         'revert', // 이전 커밋 되돌리기 (git revert 실행 후 커밋)
