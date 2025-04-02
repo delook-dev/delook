@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Footer from './footer/Footer';
 import Header from './header/Header';
 
-export default function Layout() {
+export function Layout() {
   return (
     <div className="relative flex min-h-svh flex-col border-border bg-background sm:mx-5 sm:border-x sm:border-dashed">
       <Header />
