@@ -3,8 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import IconGithub from '@/assets/icons/github.svg?react';
 import IconLogo from '@/assets/icons/logo.svg?react';
-import { ExternalLink } from '@/components/ui/ExternalLink';
-import { IconButton } from '@/components/ui/IconButton';
+import { ExternalLink, IconButton } from '@/components';
 import { GITHUB_URL, ROUTES } from '@/constants';
 import { useTheme } from '@/hooks';
 
@@ -55,8 +54,8 @@ export default function Header() {
           {headerNavigation.map((nav) => (
             <Link
               className={`${
-                activeNav(nav.href) ? 'text-primary' : ''
-              } py-2 text-center text-xs font-normal text-foreground/80 hover:opacity-90 sm:text-sm`}
+                activeNav(nav.href) ? 'text-primary' : 'text-foreground/90'
+              } py-2 text-center text-xs font-normal hover:opacity-90 sm:text-sm`}
               to={nav.href}
               key={nav.text}
             >
