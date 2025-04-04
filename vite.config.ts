@@ -5,6 +5,14 @@ import Pages from 'vite-plugin-pages';
 import generateSitemap from 'vite-plugin-pages-sitemap';
 import svgr from 'vite-plugin-svgr';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import mdx from '@mdx-js/rollup';
+
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -23,6 +31,10 @@ export default defineConfig({
           dest: '.',
         },
       ],
+    }),
+    mdx({
+      remarkPlugins: [remarkGfm, remarkFrontmatter, [remarkMdxFrontmatter, { name: 'metaData' }]],
+      rehypePlugins: [[rehypeHighlight, { detect: true }], rehypeSlug, rehypeStringify],
     }),
   ],
   build: {
