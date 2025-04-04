@@ -7,9 +7,9 @@ import { contributeContents, mainContents } from './_content';
 
 export default function AboutPage() {
   return (
-    <main className="flex flex-1 pt-7 md:mx-auto">
+    <div className="flex flex-1 pt-7 md:mx-auto">
       <h1 className="sr-only">디룩 | DeLook</h1>
-      <div className="flex w-full flex-col gap-5 sm:flex-row">
+      <div className="flex w-full flex-col justify-between gap-5 sm:flex-row">
         <section className="flex flex-col overflow-y-auto">
           <h2 className="sr-only">디룩 소개글</h2>
           <p className="whitespace-pre-wrap text-base font-extralight text-stone-900 dark:text-stone-100 sm:text-xl">
@@ -39,6 +39,6 @@ export default function AboutPage() {
           </Button>
         </section>
       </div>
-    </main>
+    </div>
   );
 }
