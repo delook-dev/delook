@@ -1,0 +1,87 @@
+.markdown {
+  @apply mt-8 mb-24;
+}
+
+.markdown :is(h1) {
+  @apply text-2xl;
+}
+
+.markdown :is(h2) {
+  @apply text-xl;
+}
+
+.markdown :is(h3) {
+  @apply text-lg mb-3;
+}
+
+.markdown :is(h4) {
+  @apply text-base mb-3;
+}
+
+.markdown :is(h1, h2, h3, h4, h5, h6) {
+  @apply scroll-mt-32 font-semibold;
+}
+
+.markdown code:not(pre > code) {
+  @apply rounded bg-muted p-1 px-[0.3rem] py-[0.2rem] font-mono text-sm font-medium before:hidden after:hidden;
+}
+
+.markdown blockquote {
+  @apply font-normal text-sm border-primary py-1 my-10;
+  p {
+    @apply my-0 not-italic text-secondary-foreground;
+  }
+}
+
+.markdown table {
+  @apply w-full border-collapse border;
+}
+
+.markdown th {
+  @apply border bg-background p-2;
+}
+
+.markdown td {
+  @apply border p-2;
+}
+
+.markdown hr {
+  @apply border-b border-0 border-border my-6;
+}
+
+.markdown a {
+  @apply text-sky-500 no-underline hover:text-sky-600 font-normal;
+}
+
+.markdown input[type='checkbox']:disabled {
+  @apply border text-foreground focus:ring-primary;
+}
+
+.markdown .contains-task-list {
+  @apply list-none pl-1;
+}
+
+.markdown .contains-task-list li {
+  @apply flex items-center gap-2;
+}
+
+.markdown .contains-task-list input[type='checkbox'] {
+  @apply w-4 h-4;
+}
+
+.markdown details {
+  @apply py-2 transition-all;
+}
+
+.markdown summary {
+  @apply cursor-pointer font-medium text-foreground flex justify-between items-center py-2;
+}
+
+.markdown summary::after {
+  content: '';
+  @apply inline-block w-2 h-2 border-l-2 border-b-2 border-foreground -rotate-45 transition-all;
+}
+
+.markdown details[open] summary::after {
+  transform: rotate(135deg);
+}

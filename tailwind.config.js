@@ -68,7 +68,7 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: 'none',
-            '--tw-prose-body': 'hsl(0, 0%, 19%, 1)',
+            '--tw-prose-body': 'hsl(0, 0%, 20%, 1)',
             '--tw-prose-bold': 'hsl(var(--tw-prose-body))',
             '--tw-prose-invert-bold': 'hsl(var(--tw-prose-invert-body))',
             '--tw-prose-counters': 'hsl(var(--tw-prose-body))',

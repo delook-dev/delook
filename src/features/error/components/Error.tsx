@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
-import { ERROR_MSG } from '@/constants';
+import { Button } from '@/components/ui';
 
-import { Button } from '../ui';
+import { ERROR_MSG } from '../constants/errorMsg';
 
 interface ErrorPageProps {
   type: keyof typeof ERROR_MSG;

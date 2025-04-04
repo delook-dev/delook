@@ -1,0 +1,19 @@
+---
+title: 배열에서 랜덤 요소 가져오기
+type: concept
+language: Javascript
+tags:
+  - Javascript
+  - Array
+dateModified: 2044.04.03
+---
+
+# 배열에서 랜덤 요소를 가져오는 방법
+
+`Math.random()`을 사용하여 랜덤 숫자를 생성합니다.  
+이를 `Array.prototype.length`와 곱한 후, `Math.floor()`를 사용하여 가장 가까운 정수로 반올림합니다.
+
+```js
+const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
+sample([3, 7, 9, 11]); // 9
+```

@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) hsl(var(--background));
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -20,6 +25,7 @@ body {
 
 @theme {
   --font-prtendard: 'Pretendard Variable', Pretendard, -apple-system, serif;
+  --breakpoint-xs: 20rem;
 }
 
 @layer base {
@@ -90,4 +96,17 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 5px;
 }
