@@ -11,6 +11,10 @@ type PostData = {
   Content: React.ComponentType;
 };
 
+type PostDataWithFilename = {
+  filename: string;
+} & PostData;
+
 type PostModuleData = {
   metaData: PostMetaData;
   default: React.ComponentType;
@@ -18,4 +22,13 @@ type PostModuleData = {
 
 type PostModules = Record<string, () => Promise<PostModuleData>>;
 
-export type { PostData, PostMetaData, PostModuleData, PostModules };
+type PostPathData = { category: string; filename: string };
+
+export type {
+  PostData,
+  PostDataWithFilename,
+  PostMetaData,
+  PostModuleData,
+  PostModules,
+  PostPathData,
+};
