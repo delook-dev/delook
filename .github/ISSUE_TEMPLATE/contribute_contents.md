@@ -1,7 +1,7 @@
 ---
 name: Contribute contents
 about: 콘텐츠 기여시 이 템플릿을 사용하세요.
-title: '[Docs]'
+title: '[DOCS]'
 labels: ''
 assignees: ''
 ---
