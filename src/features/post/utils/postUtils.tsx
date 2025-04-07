@@ -1,4 +1,9 @@
-import { PostData, PostModuleData, PostModules } from '@/features/post/types/postTypes';
+import {
+  PostData,
+  PostDataWithFilename,
+  PostModuleData,
+  PostModules,
+} from '@/features/post/types/postTypes';
 
 const postModules = import.meta.glob(`/docs/posts/**/*.mdx`, {
   eager: false,
@@ -21,22 +26,26 @@ const loadModule = async (importer: () => Promise<PostModuleData>): Promise<Post
  * 카테고리 폴더별로 그룹화
  * @returns Record<string, PostData[]>
  */
-const getPostsByCategory = async (): Promise<Record<string, PostData[]>> => {
+const getPostsByCategory = async (): Promise<Record<string, PostDataWithFilename[]>> => {
   const entries = Object.entries(postModules);
-  const groupedPosts: Record<string, PostData[]> = {};
+  const groupedPosts: Record<string, PostDataWithFilename[]> = {};
 
   for (const [path, importer] of entries) {
-    const match = path.match(/\/docs\/posts\/([^/]+)\/[^/]+\.mdx$/);
+    const match = path.match(/\/docs\/posts\/([^/]+)\/([^/]+)\.mdx$/);
     if (!match) continue;
 
     const category = match[1];
+    const filename = match[2];
 
     if (!groupedPosts[category]) {
       groupedPosts[category] = [];
     }
 
     const post = await loadModule(importer);
-    groupedPosts[category].push(post);
+    groupedPosts[category].push({
+      filename,
+      ...post,
+    });
   }
 
   return groupedPosts;
