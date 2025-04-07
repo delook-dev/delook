@@ -24,14 +24,14 @@ export default function Header() {
 
   return (
     <header className="sticky inset-x-0 top-0 z-10 bg-background/80 backdrop-blur-sm">
-      <div className="relative flex flex-wrap items-center justify-between border-b border-dashed border-border px-3 md:-mx-5 md:px-6">
-        <div className="flex items-center justify-center sm:flex-1 sm:translate-x-12">
-          <Link className="mx-auto py-3 pl-1 sm:pl-10" to="/">
+      <div className="relative flex flex-wrap items-center justify-between border-b border-dashed border-border sm:px-3 lg:-mx-4 lg:px-4">
+        <div className="flex items-center justify-center transition-transform sm:flex-1 sm:translate-x-12">
+          <Link className="mx-auto py-3 pl-4 sm:pl-2" to="/">
             <IconLogo />
           </Link>
         </div>
 
-        <div className="z-10 flex w-full items-center justify-end border-t border-dashed border-border md:pr-2 xs:w-fit xs:justify-normal xs:border-none">
+        <div className="z-10 flex w-full items-center justify-end border-t border-dashed border-border xs:w-fit xs:justify-normal xs:border-none">
           <IconButton tooltipContent="필터">
             <Settings2 />
           </IconButton>
@@ -49,8 +49,9 @@ export default function Header() {
           </IconButton>
         </div>
       </div>
-      <div className="border-b border-dashed border-border">
-        <nav className="flex justify-start gap-6 overflow-auto px-4 sm:justify-center sm:px-0 md:mx-auto">
+
+      <div className="border-b border-dashed border-border lg:-mx-4 xl:mx-0">
+        <nav className="flex justify-start gap-6 overflow-auto px-4 sm:justify-center md:mx-auto md:px-0">
           {headerNavigation.map((nav) => (
             <Link
               className={`${

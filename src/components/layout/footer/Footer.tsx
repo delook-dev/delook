@@ -4,8 +4,8 @@ import { footerContents } from './_content';
 
 export default function Footer() {
   return (
-    <footer className="mx-3 flex flex-col gap-2 border-t border-dashed border-border px-1 py-4 text-xs font-normal md:-mx-5 md:flex-row md:items-center md:justify-between md:gap-2 md:px-8">
-      <div className="flex flex-col">
+    <footer className="mt-auto flex flex-col gap-4 border-t border-dashed border-border px-3 py-4 text-xs font-normal md:flex-row md:items-center md:justify-between md:gap-2 lg:-mx-4 lg:px-8">
+      <div className="flex flex-col gap-1 md:gap-0">
         {footerContents.infos.map((info) => (
           <ExternalLink
             className="text-foreground/80 hover:text-primary hover:underline"
@@ -24,7 +24,7 @@ export default function Footer() {
         {footerContents.intro}
       </ExternalLink>
 
-      <div className="flex flex-col text-foreground/80 md:flex-row md:gap-3">
+      <div className="flex flex-col gap-1 text-foreground/80 md:flex-row md:gap-3">
         {footerContents.links.map((info) => (
           <ExternalLink
             className="hover:text-primary hover:underline"
