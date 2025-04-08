@@ -1,10 +1,6 @@
 import { ChevronRight } from 'lucide-react';
 
-import { MOBILE_BREAKPOINT } from '@/constants';
-import { useWindowWidth } from '@/hooks';
-
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './Collapsible';
-import { Sheet, SheetClose } from './Sheet';
 import {
   SidebarMenuButton,
   SidebarMenuItem,
@@ -58,34 +54,15 @@ export const SidebarCollapsibleMenu = ({
   );
 };
 
-const SidebarSubMenuList = ({
-  items,
-  closeOnClick,
-}: {
-  items: SidebarSubItemProps[];
-  closeOnClick: boolean;
-}) => {
-  const windowWidth = useWindowWidth();
-  const isMobile = windowWidth < MOBILE_BREAKPOINT;
-
+const SidebarSubMenuList = ({ items }: { items: SidebarSubItemProps[]; closeOnClick: boolean }) => {
   return (
     <SidebarMenuSub className="mb-2">
       {items.map(({ key, title, isActive, onClick }) => {
-        const button = (
-          <SidebarMenuSubButton isActive={isActive} className="cursor-pointer" onClick={onClick}>
-            <span className="overflow-hidden truncate whitespace-nowrap">{title}</span>
-          </SidebarMenuSubButton>
-        );
-
         return (
           <SidebarMenuSubItem key={key} className="text-sm">
-            {isMobile && closeOnClick ? (
-              <Sheet>
-                <SheetClose asChild>{button}</SheetClose>
-              </Sheet>
-            ) : (
-              button
-            )}
+            <SidebarMenuSubButton isActive={isActive} className="cursor-pointer" onClick={onClick}>
+              <span className="overflow-hidden truncate whitespace-nowrap">{title}</span>
+            </SidebarMenuSubButton>
           </SidebarMenuSubItem>
         );
       })}
