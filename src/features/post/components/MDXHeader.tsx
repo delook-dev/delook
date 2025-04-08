@@ -42,7 +42,7 @@ export function MDXHeader({
       <div className="flex w-full flex-wrap items-center gap-1">
         {metaData.tags.map((tag: string) => (
           <Badge
-            className="whitespace-nowrap text-primary/60 dark:text-violet-400"
+            className="whitespace-nowrap border-primary/20 text-primary/60 dark:border-primary/30 dark:text-primary/80"
             key={tag}
             rounded="full"
             size="xxs"
