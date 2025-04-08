@@ -18,7 +18,9 @@ export const SidebarLayout = ({
       </Sidebar>
 
       <div className="flex flex-col">
-        {isMobile && <SidebarTrigger className="bg-primary text-gray-100 hover:bg-primary/90" />}
+        {isMobile && (
+          <SidebarTrigger className="bg-primary text-gray-100 hover:bg-primary/90 hover:text-gray-100" />
+        )}
         <SidebarInset className="flex-1">{children}</SidebarInset>
       </div>
     </SidebarProvider>
