@@ -1,0 +1,33 @@
+---
+title: 콜백 함수
+type: concept
+language: Javascript
+tags:
+  - Javascript
+  - function
+dateModified: 2025.04.08
+---
+
+# 콜백 함수(Callback Function)
+
+**함수의 매개변수(parameter)를 통해 다른 함수의 내부로 전달되는 함수**
+
+- 함수를 명시적으로 호출하는 방식이 아니라 특정 이벤트가 발생했을 때 시스템에 의해 호출되는 함수
+- 함수형 프로그래밍, 비동기 처리(이벤트 처리, Ajax 통신, 타이머 함수 등), 고차 함수에 활용되는 중요한 패턴
+- 자바스크립트의 함수는 일급 객체라 매개변수를 통해 함수 전달 가능
+
+## 호출 방법
+
+콜백 함수가 동기식으로 호출되는지, 비동기식으로 호출되는지 이해하는 것은 사이드 이펙트를 분석할 때 특히 중요
+
+### 동기식 콜백 (Synchronous Callbacks)
+
+함수 호출 직후에 호출(중간에 비동기 작업 없이)
+
+- 예: `Array.prototype.map()`, `Array.prototype.forEach()`에 전달된 콜백 함수
+
+### 비동기식 콜백 (Asynchronous Callbacks)
+
+비동기 작업이 완료된 후 호출
+
+- 예: `setTimeout()`, `Promise.prototype.then()`에 전달된 콜백 함수
