@@ -188,6 +188,16 @@ const Sidebar = React.forwardRef<
     }
 
     if (isMobile) {
+      const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+
+        // sidebar의 하위 메뉴 (menu-sub) 클릭된 경우에만 닫기
+        const isSubMenuItemClicked = target.closest('[data-sidebar="menu-sub"]');
+        if (isSubMenuItemClicked) {
+          setOpenMobile(false);
+        }
+      };
+
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
@@ -205,7 +215,7 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-            <SheetTitle>{children}</SheetTitle>
+            <SheetTitle onClick={handleClick}>{children}</SheetTitle>
           </SheetContent>
         </Sheet>
       );
