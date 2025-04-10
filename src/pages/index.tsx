@@ -11,11 +11,15 @@ export default function Home() {
 
   if (!post) return;
 
-  const { metaData, Content } = post;
+  const { category, filename, metaData, Content } = post;
 
   return (
     <>
-      <MDXHeader metaData={metaData} onBookmark={() => console.log('save bookmark')} />
+      <MDXHeader
+        isBookmarked={post.isBookmarked}
+        metaData={metaData}
+        pathData={{ category, filename }}
+      />
       <MDXRender>
         <Content />
       </MDXRender>

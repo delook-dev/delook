@@ -5,7 +5,7 @@ import { ErrorPage } from '@/features/error';
 import { MDXHeader, MDXRender } from '@/features/post';
 
 export default function ArchivePage() {
-  const { postsByCategory, post } = useArchive();
+  const { postsByCategory, post, selectedPost } = useArchive();
 
   const categoryList: CategoryList[] = useMemo(() => {
     return Object.entries(postsByCategory).map(([category, posts]) => ({
@@ -19,16 +19,22 @@ export default function ArchivePage() {
     }));
   }, [postsByCategory]);
 
-  if (!post) {
+  if (!post || !selectedPost) {
     return <ErrorPage type="NOT_FOUND" />;
   }
 
   const { metaData, Content } = post;
+  const { category, filename } = selectedPost;
 
   return (
     <ArchiveLayout categoryList={categoryList}>
       <div className="mx-auto max-w-3xl md:pl-6 md:pt-4">
-        <MDXHeader metaData={metaData} onBookmark={() => console.log('save bookmark')} />
+        <MDXHeader
+          isBookmarked={post.isBookmarked}
+          metaData={metaData}
+          pathData={{ category, filename }}
+        />
+
         <MDXRender>
           <Content />
         </MDXRender>

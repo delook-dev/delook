@@ -1,22 +1,25 @@
-import { Bookmark, BookmarkCheck } from 'lucide-react';
-import { useState } from 'react';
+import { Bookmark } from 'lucide-react';
 
 import { Badge, IconButton } from '@/components';
-import { PostMetaData } from '@/features/post/types/postTypes';
+import { useBookmark } from '@/features/bookmark';
+import { PostMetaData, PostPathData } from '@/features/post';
+
+const ColorIconFilled = '#8c3fff';
 
 export function MDXHeader({
   metaData,
-  onBookmark,
+  isBookmarked,
+  pathData,
 }: {
   metaData: PostMetaData;
-  onBookmark: () => void;
+  isBookmarked: boolean;
+  pathData: PostPathData;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
-
-  const handleBookmark = () => {
-    setIsBookmarked((prev) => !prev);
-    onBookmark();
-  };
+  const { bookmarked, handleBookmark } = useBookmark({
+    metaData,
+    isBookmarked,
+    pathData,
+  });
 
   return (
     <header className="mt-3 flex flex-col items-start border-b border-b-muted pb-4">
@@ -29,7 +32,11 @@ export function MDXHeader({
           {metaData.language}
         </Badge>
         <IconButton buttonProps={{ className: 'hover:bg-transperant' }} onClick={handleBookmark}>
-          {isBookmarked ? <BookmarkCheck size={30} /> : <Bookmark size={30} />}
+          {bookmarked ? (
+            <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
+          ) : (
+            <Bookmark size={30} />
+          )}
         </IconButton>
       </div>
 

@@ -6,14 +6,15 @@ type PostMetaData = {
   dateModified: string;
 };
 
-type PostData = {
+type SinglePostViewData = {
   metaData: PostMetaData;
   Content: React.ComponentType;
+  isBookmarked: boolean;
 };
 
-type PostDataWithFilename = {
-  filename: string;
-} & PostData;
+type PostPathData = { category: string; filename: string };
+
+type PostData = SinglePostViewData & PostPathData;
 
 type PostModuleData = {
   metaData: PostMetaData;
@@ -22,13 +23,11 @@ type PostModuleData = {
 
 type PostModules = Record<string, () => Promise<PostModuleData>>;
 
-type PostPathData = { category: string; filename: string };
-
 export type {
   PostData,
-  PostDataWithFilename,
   PostMetaData,
   PostModuleData,
   PostModules,
   PostPathData,
+  SinglePostViewData,
 };
