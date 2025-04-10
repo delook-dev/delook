@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { getPost, getPostsByCategory, PostData, PostDataWithFilename } from '@/features/post';
+import { getPost, getPostsByCategory, PostData, SinglePostViewData } from '@/features/post';
 
 import { ArchiveSearchParams } from '../types/archiveTypes';
 
@@ -10,35 +10,32 @@ export const useArchive = () => {
   const category = searchParams.get('category');
   const filename = searchParams.get('filename');
 
-  const [postsByCategory, setPostsByCategory] = useState<Record<string, PostDataWithFilename[]>>(
-    {},
-  );
+  const [postsByCategory, setPostsByCategory] = useState<Record<string, PostData[]>>({});
   const [selectedPost, setSelectedPost] = useState<ArchiveSearchParams | null>(null);
-  const [post, setPost] = useState<PostData | null>(null);
+  const [post, setPost] = useState<SinglePostViewData | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPost = async () => {
       const posts = await getPostsByCategory();
       setPostsByCategory(posts);
 
-      if (!category || !filename) {
-        const firstCategory = Object.keys(posts)[0];
-        const firstPost = posts[firstCategory][0];
-        setSelectedPost({ category: firstCategory, filename: firstPost.filename });
-      } else {
-        setSelectedPost({ category, filename });
-      }
+      // 선택된 포스트가 없을 경우 첫 번째 포스트로 fallback
+      const firstCategory = Object.keys(posts)[0];
+      const firstPost = posts[firstCategory]?.[0];
+
+      const selected =
+        category && filename
+          ? { category, filename }
+          : { category: firstCategory, filename: firstPost.filename };
+
+      setSelectedPost(selected);
+
+      const postData = await getPost(selected);
+      setPost(postData);
     };
 
-    fetchData();
+    fetchPost();
   }, [category, filename]);
 
-  useEffect(() => {
-    if (selectedPost) {
-      const { category, filename } = selectedPost;
-      getPost({ category, title: filename }).then((v) => setPost(v));
-    }
-  }, [selectedPost]);
-
-  return { postsByCategory, post };
+  return { postsByCategory, post, selectedPost };
 };
