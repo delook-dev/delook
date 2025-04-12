@@ -14,8 +14,8 @@ export function ErrorPage({ type, onRetry }: ErrorPageProps) {
 
   return (
     <section className="mx-auto flex flex-1 flex-col items-center justify-center px-5">
-      <h2 className="mb-2 text-2xl">{HEADING}</h2>
-      <span className="mb-4 text-sm text-foreground/80">{BODY}</span>
+      <h1 className="mb-2 text-2xl font-medium">{HEADING}</h1>
+      <p className="mb-4 text-foreground/80">{BODY}</p>
       {onRetry ? (
         // 재시도 버튼
         <Button
