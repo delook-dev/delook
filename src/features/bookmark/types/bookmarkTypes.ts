@@ -1,12 +1,12 @@
 import { PostMetaData } from '../../post/types/postTypes';
 
-type BookmarkOnStorage = {
+type BookmarkData = {
   category: string; //카테고리
   filename: string; //파일명
   dateSaved: string; //저장일시
-  postMetaData: PostMetaData; //포스트 메타데이터
+  metaData: PostMetaData; //포스트 메타데이터
 };
 
-type CategorizedBookmarks = Record<string, BookmarkOnStorage[]>;
+type CategorizedBookmarks = Record<string, BookmarkData[]>;
 
-export type { BookmarkOnStorage, CategorizedBookmarks, StorageValueMap };
+export type { BookmarkData, CategorizedBookmarks, StorageValueMap };
