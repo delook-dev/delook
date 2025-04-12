@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 
+import { Toaster } from '../ui';
 import Footer from './footer/Footer';
 import Header from './header/Header';
 
@@ -16,6 +17,7 @@ export function Layout() {
         className={`flex w-full flex-1 flex-col p-4 sm:mx-auto ${!isPageIncludeSidebar ? 'max-w-3xl ' : 'md:p-0'}`}
       >
         <Outlet />
+        <Toaster />
       </main>
       <Footer />
     </div>
