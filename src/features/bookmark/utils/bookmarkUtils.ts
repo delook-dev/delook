@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants';
-import { BookmarkOnStorage, CategorizedBookmarks } from '@/features/bookmark';
+import { BookmarkData, CategorizedBookmarks } from '@/features/bookmark';
 import { PostPathData } from '@/features/post';
 import { getFromStorage, saveToStorage } from '@/lib/storage';
 
@@ -8,9 +8,13 @@ import { getFromStorage, saveToStorage } from '@/lib/storage';
  * @param category 카테고리
  * @returns 전체 북마크 리스트(saved), 해당 카테고리 목록(storedList)
  */
-const getStorageList = async (category: string) => {
+const getStorageList = async (category?: string) => {
   const saved = ((await getFromStorage(STORAGE_KEYS['bookmark'])) as CategorizedBookmarks) ?? {};
-  const storedList = saved[category] ?? [];
+
+  let storedList: BookmarkData[] = [];
+  if (category) {
+    storedList = saved[category] ?? [];
+  }
 
   return { saved, storedList };
 };
@@ -24,21 +28,21 @@ const getStorageList = async (category: string) => {
 const onSaveBookmark = async ({
   category,
   filename,
-  postMetaData,
-}: Omit<BookmarkOnStorage, 'dateSaved'>) => {
+  metaData,
+}: Omit<BookmarkData, 'dateSaved'>) => {
   const now = new Date().toISOString();
 
-  const newBookmark: BookmarkOnStorage = {
+  const newBookmark: BookmarkData = {
     category,
     filename,
     dateSaved: now,
-    postMetaData,
+    metaData,
   };
 
   const { saved, storedList } = await getStorageList(category);
 
   // 중복 확인
-  const alreadyExists = storedList.some((post: BookmarkOnStorage) => post.filename === filename);
+  const alreadyExists = storedList.some((post: BookmarkData) => post.filename === filename);
   if (alreadyExists) return;
 
   const updated = {
@@ -67,4 +71,4 @@ const onDeleteBookmark = async ({ category, filename }: PostPathData) => {
   await saveToStorage(STORAGE_KEYS['bookmark'], saved);
 };
 
-export { onDeleteBookmark, onSaveBookmark };
+export { getStorageList, onDeleteBookmark, onSaveBookmark };

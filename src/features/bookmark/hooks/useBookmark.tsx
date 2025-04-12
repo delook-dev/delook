@@ -25,7 +25,7 @@ export const useBookmark = ({
     if (bookmarked) {
       onDeleteBookmark({ category, filename });
     } else {
-      onSaveBookmark({ category, filename, postMetaData: metaData });
+      onSaveBookmark({ category, filename, metaData: metaData });
     }
 
     setBookmarked((bookmarked) => !bookmarked);
