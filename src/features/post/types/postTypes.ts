@@ -23,7 +23,17 @@ type PostModuleData = {
 
 type PostModules = Record<string, () => Promise<PostModuleData>>;
 
+type CategoryList = {
+  category: string;
+  posts: {
+    title: string;
+    filename: string;
+    dateSaved?: string;
+  }[];
+};
+
 export type {
+  CategoryList,
   PostData,
   PostMetaData,
   PostModuleData,

@@ -1,4 +1,4 @@
-import { BookmarkOnStorage, CategorizedBookmarks } from '@/features/bookmark';
+import { BookmarkData, CategorizedBookmarks } from '@/features/bookmark';
 import {
   PostData,
   PostModuleData,
@@ -37,7 +37,7 @@ const checkBookmark = async (category: string, filename: string): Promise<boolea
   const saved = (await getFromStorage('saved_posts')) as CategorizedBookmarks;
   if (!saved) return false;
 
-  return (saved[category] ?? []).some((post: BookmarkOnStorage) => post.filename === filename);
+  return (saved[category] ?? []).some((post: BookmarkData) => post.filename === filename);
 };
 
 /**
