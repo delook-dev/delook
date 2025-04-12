@@ -63,7 +63,5 @@ export function usePostList<T extends BasePostData>({
     }));
   }, [postsByCategory]);
 
-  console.log(categoryList);
-
   return { postsByCategory, selectedPost, post, categoryList };
 }
