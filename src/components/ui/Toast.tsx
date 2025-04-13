@@ -14,7 +14,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      'fixed top-0 right-1/2 translate-x-1/2 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col max-w-[300px]',
+      'fixed top-0 right-1/2 translate-x-1/2 z-[100] flex max-h-screen flex-col-reverse p-4 sm:flex-col min-w-[100px] w-fit',
       className,
     )}
     {...props}
@@ -23,11 +23,11 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  'group pointer-events-auto text-neutral-900 relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md p-4 pr-6 shadow-sm transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
+  'group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md p-4 pr-5 shadow-sm transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
   {
     variants: {
       variant: {
-        default: 'bg-yellow',
+        default: 'bg-yellow text-zinc-700',
         destructive: 'destructive group bg-pink text-destructive-foreground',
       },
     },
@@ -90,7 +90,7 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn('text-sm font-normal [&+div]:text-xs', className)}
+    className={cn('text-sm font-normal [&+div]:text-xs text-center', className)}
     {...props}
   />
 ));
