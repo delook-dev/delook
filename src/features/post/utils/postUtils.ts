@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/constants';
 import { BookmarkData, CategorizedBookmarks } from '@/features/bookmark';
 import {
   PostData,
@@ -85,9 +86,9 @@ const generatePostData = async (
  */
 const getPostsByCategory = async (): Promise<Record<string, PostData[]>> => {
   const grouped: Record<string, PostData[]> = {};
-  const entries = Object.entries(postModules);
+  const postPathList = Object.entries(postModules);
 
-  for (const [path, importer] of entries) {
+  for (const [path, importer] of postPathList) {
     const post = await generatePostData(path, importer);
     if (!post) continue;
 
@@ -126,15 +127,39 @@ const getPost = async ({
 };
 
 /**
+ * 필터링 된 포스트 반환
+ */
+const getFilteredEntries = async (): Promise<[string, () => Promise<PostModuleData>][]> => {
+  const postPathList = Object.entries(postModules);
+  const filter = await getFromStorage(STORAGE_KEYS['filter']);
+
+  // 필터가 없으면 전체 리턴
+  if (!filter) return postPathList;
+
+  const validCategories = Object.entries(filter)
+    .filter(([, enabled]) => enabled)
+    .map(([category]) => category);
+
+  const filtered = postPathList.filter(([path]) => {
+    const parsed = parsePath(path);
+    return parsed ? validCategories.includes(parsed.category) : false;
+  });
+
+  return filtered;
+};
+
+/**
  * 랜덤 포스트 반환
  * @returns PostData
  */
 const getRandomPost = async (): Promise<PostData> => {
-  const entries = Object.entries(postModules);
-  const randomEntry = entries[Math.floor(Math.random() * entries.length)];
+  const postPathList = await getFilteredEntries();
+
+  const randomEntry = postPathList[Math.floor(Math.random() * postPathList.length)];
   const [path, importer] = randomEntry;
 
   const post = await generatePostData(path, importer);
+
   if (!post) {
     throw new Error(`유효하지 않은 MDX 경로입니다: ${path}`);
   }
