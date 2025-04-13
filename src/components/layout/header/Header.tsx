@@ -3,11 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 
 import IconGithub from '@/assets/icons/github.svg?react';
 import IconLogo from '@/assets/icons/logo.svg?react';
-import { ExternalLink, IconButton } from '@/components';
+import { ExternalLink, IconButton, Popover, PopoverContent, PopoverTrigger } from '@/components';
 import { GITHUB_URL, ROUTES } from '@/constants';
 import { useTheme } from '@/hooks';
 
 import { headerNavigation } from './_content';
+import { FilterForm } from './FilterForm';
 
 export default function Header() {
   const location = useLocation();
@@ -32,9 +33,16 @@ export default function Header() {
         </div>
 
         <div className="z-10 flex w-full items-center justify-end border-t border-dashed border-border xs:w-fit xs:justify-normal xs:border-none">
-          <IconButton tooltipContent="필터">
-            <Settings2 />
-          </IconButton>
+          <Popover>
+            <PopoverTrigger>
+              <IconButton tooltipContent="필터" popover>
+                <Settings2 />
+              </IconButton>
+            </PopoverTrigger>
+            <PopoverContent className="xs:absolute xs:-right-5">
+              <FilterForm />
+            </PopoverContent>
+          </Popover>
 
           <IconButton buttonProps={{ asChild: true }}>
             <ExternalLink href={GITHUB_URL}>

@@ -6,11 +6,9 @@ import * as React from 'react';
 import {
   Button,
   Input,
-  Separator,
   Sheet,
   SheetContent,
   SheetTitle,
-  Skeleton,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -385,21 +383,6 @@ const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<'div
 );
 SidebarFooter.displayName = 'SidebarFooter';
 
-const SidebarSeparator = React.forwardRef<
-  React.ElementRef<typeof Separator>,
-  React.ComponentProps<typeof Separator>
->(({ className, ...props }, ref) => {
-  return (
-    <Separator
-      ref={ref}
-      data-sidebar="separator"
-      className={cn('mx-2 w-auto bg-sidebar-border', className)}
-      {...props}
-    />
-  );
-});
-SidebarSeparator.displayName = 'SidebarSeparator';
-
 const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
   ({ className, ...props }, ref) => {
     return (
@@ -643,39 +626,6 @@ const SidebarMenuBadge = React.forwardRef<HTMLDivElement, React.ComponentProps<'
 );
 SidebarMenuBadge.displayName = 'SidebarMenuBadge';
 
-const SidebarMenuSkeleton = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<'div'> & {
-    showIcon?: boolean;
-  }
->(({ className, showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      data-sidebar="menu-skeleton"
-      className={cn('flex h-8 items-center gap-2 rounded-md px-2', className)}
-      {...props}
-    >
-      {showIcon && <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />}
-      <Skeleton
-        className="h-4 max-w-[--skeleton-width] flex-1"
-        data-sidebar="menu-skeleton-text"
-        style={
-          {
-            '--skeleton-width': width,
-          } as React.CSSProperties
-        }
-      />
-    </div>
-  );
-});
-SidebarMenuSkeleton.displayName = 'SidebarMenuSkeleton';
-
 const SidebarMenuSub = React.forwardRef<HTMLUListElement, React.ComponentProps<'ul'>>(
   ({ className, ...props }, ref) => (
     <ul
@@ -742,13 +692,11 @@ export {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSkeleton,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
-  SidebarSeparator,
   SidebarTrigger,
   // eslint-disable-next-line react-refresh/only-export-components
   useSidebar,

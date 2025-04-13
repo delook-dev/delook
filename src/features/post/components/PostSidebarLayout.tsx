@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { SidebarCollapsibleMenu, SidebarLayout } from '@/components';
 
-import { CategoryList } from '../types/archiveTypes';
+import { CategoryList } from '../types/postTypes';
 
-export const ArchiveLayout = ({
+export const PostSidebarLayout = ({
   categoryList,
   children,
 }: {
@@ -14,7 +14,7 @@ export const ArchiveLayout = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleSelectedPost = useCallback(
+  const handleSearchParams = useCallback(
     (category: string, filename: string) => {
       setSearchParams({ category, filename });
     },
@@ -29,10 +29,14 @@ export const ArchiveLayout = ({
         key: filename,
         title: title,
         isActive: searchParams.get('filename') === filename,
-        onClick: () => handleSelectedPost(category, filename),
+        onClick: () => handleSearchParams(category, filename),
       }))}
     />
   ));
 
-  return <SidebarLayout sidebarMenu={sidebarMenu}>{children}</SidebarLayout>;
+  return (
+    <SidebarLayout sidebarMenu={sidebarMenu}>
+      <div className="mx-auto max-w-3xl md:pl-6 md:pt-4">{children}</div>
+    </SidebarLayout>
+  );
 };

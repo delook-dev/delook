@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getRandomPost, MDXHeader, MDXRender, PostData } from '@/features/post';
+import { getRandomPost, PostData, RenderPost } from '@/features/post';
 
 export default function Home() {
   const [post, setPost] = useState<PostData | null>(null);
@@ -11,14 +11,5 @@ export default function Home() {
 
   if (!post) return;
 
-  const { metaData, Content } = post;
-
-  return (
-    <>
-      <MDXHeader metaData={metaData} onBookmark={() => console.log('save bookmark')} />
-      <MDXRender>
-        <Content />
-      </MDXRender>
-    </>
-  );
+  return <RenderPost post={post} />;
 }

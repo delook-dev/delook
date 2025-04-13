@@ -12,6 +12,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -35,12 +36,34 @@ export default defineConfig({
       remarkPlugins: [remarkGfm, remarkFrontmatter, [remarkMdxFrontmatter, { name: 'metaData' }]],
       rehypePlugins: [[rehypeHighlight, { detect: true }], rehypeStringify],
     }),
+    visualizer({
+      open: false,
+      emitFile: process.env.NODE_ENV === 'production',
+    }),
   ],
   build: {
     outDir: 'dist',
     rollupOptions: {
       input: {
         main: './index.html',
+      },
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          form: ['react-hook-form', '@hookform/resolvers', 'zod'],
+          radix: [
+            '@radix-ui/react-toast',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-collapsible',
+          ],
+          mdx: ['@mdx-js/react', 'rehype-highlight', 'remark-gfm'],
+          tailwind: ['tailwind-merge'],
+        },
       },
     },
   },
