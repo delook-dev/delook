@@ -48,9 +48,10 @@ jobs:
       # S3에 dist 폴더 업로드
       - name: Deploy to S3
         run: |
-          aws s3 sync --region ap-northeast-2 dist s3://${{ secrets.AWS_S3_BUCKET }} \
-            --acl public-read \  # 파일을 공개 읽기 가능하게 설정
-            --delete            # S3에만 있는 오래된 파일은 삭제 (동기화 유지)
+          aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET }} \
+          --region ap-northeast-2 \
+          --acl public-read \
+          --delete
 
       # CloudFront 캐시 무효화
       - name: Invalidate CloudFront cache
