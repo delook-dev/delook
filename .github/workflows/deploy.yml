@@ -50,7 +50,6 @@ jobs:
         run: |
           aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET }} \
           --region ap-northeast-2 \
-          --acl public-read \
           --delete
 
       # CloudFront 캐시 무효화
