@@ -5,7 +5,7 @@ language: Javascript
 tags:
   - Javascript
   - Function
-dateModified: 2025.04.08
+dateModified: 2025.04.14
 ---
 
 # 콜백 함수(Callback Function)
@@ -26,8 +26,47 @@ dateModified: 2025.04.08
 
 - 예: `Array.prototype.map()`, `Array.prototype.forEach()`에 전달된 콜백 함수
 
+  ```js
+  // map() 메서드
+  const colors = ['green', 'yellow', 'blue'];
+
+  const threeColor = colors.map((color) => {
+    console.log(color);
+    return color + ' color';
+  });
+
+  console.log('마지막으로 출력', threeColor);
+  ```
+
+  출력 결과 👇
+
+  ```bash
+  green
+  yellow
+  blue
+  마지막으로 출력 [ 'green color', 'yellow color', 'blue color' ]
+  ```
+
 ### 비동기식 콜백 (Asynchronous Callbacks)
 
 비동기 작업이 완료된 후 호출
 
 - 예: `setTimeout()`, `Promise.prototype.then()`에 전달된 콜백 함수
+
+  ```js
+  function printConsole() {
+    console.log('안녕하세요');
+  }
+
+  setTimeout(printConsole, 2000);
+
+  console.log('이 콘솔이 가장 먼저 실행됩니다');
+  ```
+
+  출력 결과 👇
+
+  ```bash
+  이 콘솔이 가장 먼저 실행됩니다
+  -- (2초 뒤) --
+  안녕하세요
+  ```
