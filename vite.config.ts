@@ -13,6 +13,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
 import { visualizer } from 'rollup-plugin-visualizer';
+import prerender from '@prerenderer/rollup-plugin';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -22,7 +23,11 @@ export default defineConfig({
     svgr(),
     Pages({
       dirs: 'src/pages',
-      onRoutesGenerated: (routes) => generateSitemap({ routes }),
+      onRoutesGenerated: () =>
+        generateSitemap({
+          routes: ['/', '/about', '/archive', '/bookmark'],
+          hostname: 'https://www.delook.co.kr/',
+        }),
     }),
     viteStaticCopy({
       targets: [
@@ -39,6 +44,23 @@ export default defineConfig({
     visualizer({
       open: false,
       emitFile: process.env.NODE_ENV === 'production',
+    }),
+    prerender({
+      routes: ['/', '/about', '/archive', '/bookmark'],
+      renderer: '@prerenderer/renderer-puppeteer',
+      server: {
+        port: 3000,
+        host: 'localhost',
+      },
+      rendererOptions: {
+        maxConcurrentRoutes: 1,
+        renderAfterTime: 500,
+      },
+      postProcess(renderedRoute) {
+        renderedRoute.html = renderedRoute.html
+          .replace(/http:/i, 'https:')
+          .replace(/(https:\/\/)?(localhost|127\.0\.0\.1):\d*/i, 'https://delook.co.kr');
+      },
     }),
   ],
   build: {
