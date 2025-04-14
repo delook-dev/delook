@@ -8,19 +8,21 @@ export const IconButton = ({
   tooltipContent,
   buttonProps,
   popover = false,
+  name,
 }: {
   children: ReactNode;
   onClick?: () => void;
   tooltipContent?: string;
   buttonProps?: ButtonProps;
   popover?: boolean;
+  name: string;
 }) => {
   const buttonElement = popover ? (
     <div className="flex size-9 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
       {children}
     </div>
   ) : (
-    <Button size={'icon'} variant={'ghost'} onClick={onClick} {...buttonProps}>
+    <Button size={'icon'} name={name} variant={'ghost'} onClick={onClick} {...buttonProps}>
       {children}
     </Button>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { MetaTags } from '@/components';
 import { getRandomPost, PostData, RenderPost } from '@/features/post';
 
 export default function Home() {
@@ -11,5 +12,10 @@ export default function Home() {
 
   if (!post) return;
 
-  return <RenderPost post={post} />;
+  return (
+    <>
+      <MetaTags title={'디룩 | 성장하는 개발자의 탭'} />
+      <RenderPost post={post} />
+    </>
+  );
 }

@@ -31,7 +31,11 @@ export function MDXHeader({
         >
           {metaData.language}
         </Badge>
-        <IconButton buttonProps={{ className: 'hover:bg-transperant' }} onClick={handleBookmark}>
+        <IconButton
+          name="북마크"
+          buttonProps={{ className: 'hover:bg-transperant' }}
+          onClick={handleBookmark}
+        >
           {bookmarked ? (
             <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
           ) : (

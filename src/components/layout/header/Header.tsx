@@ -27,7 +27,7 @@ export default function Header() {
     <header className="sticky inset-x-0 top-0 z-10 bg-background/80 backdrop-blur-sm">
       <div className="relative flex flex-wrap items-center justify-between border-b border-dashed border-border sm:px-3 lg:-mx-4 lg:px-4">
         <div className="flex items-center justify-center transition-transform sm:flex-1 sm:translate-x-12">
-          <Link className="mx-auto py-3 pl-4 sm:pl-2" to="/">
+          <Link className="mx-auto py-3 pl-4 sm:pl-2" to="/" aria-label="홈으로 이동">
             <IconLogo />
           </Link>
         </div>
@@ -35,7 +35,7 @@ export default function Header() {
         <div className="z-10 flex w-full items-center justify-end border-t border-dashed border-border xs:w-fit xs:justify-normal xs:border-none">
           <Popover>
             <PopoverTrigger>
-              <IconButton tooltipContent="필터" popover>
+              <IconButton name="필터" tooltipContent="필터" popover>
                 <Settings2 />
               </IconButton>
             </PopoverTrigger>
@@ -44,13 +44,13 @@ export default function Header() {
             </PopoverContent>
           </Popover>
 
-          <IconButton buttonProps={{ asChild: true }}>
+          <IconButton name="깃허브 이동" buttonProps={{ asChild: true }}>
             <ExternalLink href={GITHUB_URL}>
               <IconGithub className="size-6 dark:fill-foreground" />
             </ExternalLink>
           </IconButton>
 
-          <IconButton onClick={toggleTheme}>
+          <IconButton name="테마 설정" onClick={toggleTheme}>
             <SunMedium className="size-[1.2rem] rotate-90 scale-0 dark:rotate-0 dark:scale-100" />
             <MoonStar className="absolute size-[1.2rem] rotate-0 scale-100 dark:-rotate-90 dark:scale-0" />
             <span className="sr-only">Toggle theme</span>
@@ -62,6 +62,7 @@ export default function Header() {
         <nav className="flex justify-start gap-6 overflow-auto px-4 sm:justify-center md:mx-auto md:px-0">
           {headerNavigation.map((nav) => (
             <Link
+              aria-label={`${nav.text}으로 이동`}
               className={`${
                 activeNav(nav.href) ? 'text-primary' : 'text-foreground/90'
               } py-2 text-center text-xs font-normal hover:opacity-90 sm:text-sm`}

@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 
+import { MetaTags } from '@/components';
+import { SITE_URL } from '@/constants';
 import { ErrorPage } from '@/features/error';
 import { getPostsByCategory, PostSidebarLayout, RenderPost, usePostList } from '@/features/post';
 
@@ -14,10 +16,23 @@ export default function ArchivePage() {
   if (!post || !selectedPost) {
     return <ErrorPage type="NOT_FOUND" />;
   }
+  const {
+    metaData: { title },
+  } = post;
+
+  const { category, filename } = selectedPost;
 
   return (
-    <PostSidebarLayout categoryList={categoryList}>
-      <RenderPost post={{ ...post, ...selectedPost }} />
-    </PostSidebarLayout>
+    <>
+      <MetaTags
+        title={`${category}/${title}`}
+        description={`${category}의${title}에 대한 내용`}
+        url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
+        keywords={`${category}, ${title}, ${filename}`}
+      />
+      <PostSidebarLayout categoryList={categoryList}>
+        <RenderPost post={{ ...post, ...selectedPost }} />
+      </PostSidebarLayout>
+    </>
   );
 }
