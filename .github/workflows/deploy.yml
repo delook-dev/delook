@@ -1,0 +1,60 @@
+# 워크플로 이름: GitHub Actions 탭에서 보이는 이름
+name: Deploy-Production
+
+# 언제 실행할지 정의: main 브랜치에 push될 때 자동 실행됨
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # 어떤 환경에서 실행할지 지정 (Ubuntu 최신 LTS)
+    runs-on: ubuntu-latest
+
+    # 여러 버전의 Node.js로 실행 가능하도록 matrix 전략 사용
+    strategy:
+      matrix:
+        node-version: [20.x] # 현재는 Node 20만 지정
+
+    steps:
+      # GitHub 레포지토리 코드 체크아웃
+      - name: Checkout Git repository
+        uses: actions/checkout@v4
+
+      # Node.js 설치 및 Yarn 캐시 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }} # 위에서 지정한 버전 사용
+          cache: 'yarn' # yarn.lock 기반으로 의존성 캐시됨
+
+      # 패키지 설치
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 빌드
+      - name: Yarn Build
+        run: yarn build
+
+      # AWS CLI 인증을 위해 자격 증명 설정
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # S3에 dist 폴더 업로드
+      - name: Deploy to S3
+        run: |
+          aws s3 sync --region ap-northeast-2 dist s3://${{ secrets.AWS_S3_BUCKET }} \
+            --acl public-read \  # 파일을 공개 읽기 가능하게 설정
+            --delete            # S3에만 있는 오래된 파일은 삭제 (동기화 유지)
+
+      # CloudFront 캐시 무효화
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} \
+            --paths "/*"  # 전체 경로 캐시 무효화
