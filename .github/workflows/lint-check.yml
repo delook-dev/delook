@@ -1,4 +1,4 @@
-name: Delook CI
+name: Lint and Type Check
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  continuous-deployment:
+  lint-check:
     name: Lint, Type Check & Build
     runs-on: ubuntu-latest
 
