@@ -30,16 +30,14 @@ Delook은 매일 새로운 탭에서 프로그래밍 개념을 자연스럽게 �
 
 - **Frontend**: React 19, TypeScript, Vite
 - **Styling**: Tailwind CSS, shadcn/ui
-- **Platform**: Chrome Extension API, AWS S3 + CloudFront
+- **Platform**: Chrome Extension, Web
+- **Infra / Deployment**: AWS S3, CloudFront
 
 ## 🚀 설치 및 사용법
 
 > 크롬 웹 스토어 등록 후 설치 안내 예정입니다.
 
 ## 🧠 기여
-> CONTRIBUTING 가이드는 준비 중입니다.
-
-Delook은 오픈소스 프로젝트로, 다양한 형태의 기여를 환영합니다. 
-- 코드 개선 및 기능 추가
-- 콘텐츠 작성 및 수정
-- 버그 리포트
+디룩은 함께 만들어가는 오픈소스 프로젝트입니다.
+지식을 나누고 싶은 누구나, Delook에 기여할 수 있습니다.
+기여를 원하신다면 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
