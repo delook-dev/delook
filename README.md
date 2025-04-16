@@ -38,6 +38,6 @@ Delook은 매일 새로운 탭에서 프로그래밍 개념을 자연스럽게 �
 > 크롬 웹 스토어 등록 후 설치 안내 예정입니다.
 
 ## 🧠 기여
-디룩은 함께 만들어가는 오픈소스 프로젝트입니다.
-지식을 나누고 싶은 누구나, Delook에 기여할 수 있습니다.
-기여를 원하신다면 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
+디룩은 함께 만들어가는 오픈소스 프로젝트입니다.</br>지식을 나누고 싶은 누구나, Delook에 기여할 수 있습니다.
+
+> 기여를 원하신다면 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
