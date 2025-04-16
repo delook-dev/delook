@@ -1,25 +1,42 @@
 ---
-title: 클로저와 스코프의 차이점은?
+title: 클로저와 스코프의 차이점은 뭔가요?
 type: interview
 language: FE-Interview
 tags:
   - Interview
   - Javascript
-dateModified: 2025.03.30
+dateModified: 2025.04.16
 ---
 
 ## 답변
 
-클로저는 함수가 선언될 당시의 외부 렉시컬 환경을 기억하고 접근할 수 있게 해주는 함수입니다.  
-즉, 외부 함수의 변수에 접근할 수 있는 내부 함수라고 이해하면 됩니다.  
-반면, 스코프는 변수의 유효 범위를 의미하며, 클로저가 존재할 수 있는 기반이 되는 개념입니다.  
-클로저는 주로 상태 유지, 은닉화 text 등에 사용되고, 자바스크립트의 비동기나 이벤트 핸들링에서 자주 등장합니다.
+스코프는 클로저가 만들어지는 기반이며, 클로저는 스코프를 기억하는 함수 객체라고 볼 수 있습니다.
 
-#### 예시
+스코프(scope)는 변수에 접근할 수 있는 유효한 범위를 의미합니다.  
+자바스크립트에서는 함수 스코프와 블록 스코프가 존재하며, 변수는 선언된 위치에 따라 접근 가능 범위가 결정됩니다.
+
+반면, 클로저(closure)는 함수가 외부 함수의 변수에 접근할 수 있는 기능을 말합니다.  
+클로저는 함수가 생성될 당시의 스코프(렉시컬 환경)를 기억하여, 외부 함수가 종료된 후에도 그 변수를 참조할 수 있게 해줍니다.
+클로저는 주로 상태 유지, 정보 은닉, 비동기 처리 등에서 활용됩니다.
+
+#### 스코프 예시 코드
+
+```js
+function example() {
+  const a = 'A';
+  console.log(a); // A
+}
+
+console.log(a); // ReferenceError: a is not defined
+```
+
+`a`는 `example()` 함수 내부에서만 유효한 지역 변수이므로, 함수 외부에서 접근하려고 하면 ReferenceError가 발생합니다.
+
+#### 클로저 예시 코드
 
 ```js
 function counter() {
-  let count = 0;
+  let count = 0; // 외부 변수
   return function () {
     count += 1;
     return count;
@@ -27,6 +44,9 @@ function counter() {
 }
 
 const increase = counter();
+
 console.log(increase()); // 1
 console.log(increase()); // 2
 ```
+
+위 코드에서 `increase`는 클로저이며, `count`는 이미 종료된 `counter()`의 지역 변수지만, 여전히 접근이 가능합니다.
