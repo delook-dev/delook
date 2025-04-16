@@ -5,15 +5,27 @@ language: Javascript
 tags:
   - Javascript
   - Array
-dateModified: 2025.04.03
+dateModified: 2025.04.16
 ---
 
 # 배열에서 랜덤 요소를 가져오는 방법
 
-`Math.random()`을 사용하여 랜덤 숫자를 생성합니다.  
-이를 `Array.prototype.length`와 곱한 후, `Math.floor()`를 사용하여 가장 가까운 정수로 반올림합니다.
+`Math.random()`을 사용하여 배열의 길이 내에서 랜덤한 인덱스를 생성합니다.  
+생성된 랜덤 숫자는 `Math.floor()`를 이용해 정수로 변환한 뒤, 배열에서 해당 인덱스의 요소를 반환합니다.
+
+다음은 랜덤 요소를 반환하는 간단한 유틸리티 함수입니다.
+
+#### 예시 코드
 
 ```js
 const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
-sample([3, 7, 9, 11]); // 9
+sample([3, 7, 9, 11]);
+```
+
+#### 출력 결과
+
+출력 값은 예시이며, 실행할 때마다 다른 값이 출력됩니다.
+
+```bash
+9
 ```
