@@ -8,16 +8,13 @@ const ColorIconFilled = '#8c3fff';
 
 export function MDXHeader({
   metaData,
-  isBookmarked,
   pathData,
 }: {
   metaData: PostMetaData;
-  isBookmarked: boolean;
   pathData: PostPathData;
 }) {
-  const { bookmarked, handleBookmark } = useBookmark({
+  const { isBookmarked, handleBookmark } = useBookmark({
     metaData,
-    isBookmarked,
     pathData,
   });
 
@@ -33,10 +30,10 @@ export function MDXHeader({
         </Badge>
         <IconButton
           name="북마크"
-          buttonProps={{ className: 'hover:bg-transperant' }}
+          buttonProps={{ className: 'hover:bg-transparent' }}
           onClick={handleBookmark}
         >
-          {bookmarked ? (
+          {isBookmarked ? (
             <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
           ) : (
             <Bookmark size={30} />

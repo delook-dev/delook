@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '@/constants';
-import { BookmarkData, CategorizedBookmarks } from '@/features/bookmark';
+import { useBookmarkStore } from '@/features/bookmark';
 import {
   PostData,
   PostModuleData,
@@ -29,19 +29,6 @@ const loadModule = async (
 };
 
 /**
- * 북마크 여부 확인
- * @param category
- * @param filename
- * @returns boolean
- */
-const checkBookmark = async (category: string, filename: string): Promise<boolean> => {
-  const saved = (await getFromStorage('saved_posts')) as CategorizedBookmarks;
-  if (!saved) return false;
-
-  return (saved[category] ?? []).some((post: BookmarkData) => post.filename === filename);
-};
-
-/**
  * 카테고리, 파일명 추출
  * @param path
  * @returns PostPathData
@@ -68,7 +55,7 @@ const generatePostData = async (
   if (!parsed) return null;
   const { category, filename } = parsed;
 
-  const isBookmarked = await checkBookmark(category, filename);
+  const isBookmarked = useBookmarkStore.getState().isBookmarked({ category, filename });
 
   const post = await loadModule(importer);
 
@@ -96,7 +83,23 @@ const getPostsByCategory = async (): Promise<Record<string, PostData[]>> => {
     grouped[post.category].push(post);
   }
 
-  return grouped;
+  // 각 카테고리 내의 포스트를 제목 기준으로 정렬
+  Object.keys(grouped).forEach((category) => {
+    grouped[category].sort((a, b) => a.metaData.title.localeCompare(b.metaData.title));
+  });
+
+  // 카테고리 키를 기준으로 정렬된 새로운 객체 생성
+  const sortedGrouped = Object.keys(grouped)
+    .sort((a, b) => a.localeCompare(b))
+    .reduce(
+      (acc, key) => {
+        acc[key] = grouped[key];
+        return acc;
+      },
+      {} as Record<string, PostData[]>,
+    );
+
+  return sortedGrouped;
 };
 
 /**
@@ -112,6 +115,10 @@ const getPost = async ({
   category: string;
   filename: string;
 }): Promise<SinglePostViewData | null> => {
+  if (!category || !filename) {
+    return null;
+  }
+
   const path = `/docs/posts/${category}/${filename}.mdx`;
   const importer = postModules[path];
 
@@ -121,7 +128,7 @@ const getPost = async ({
   }
 
   const { metaData, Content } = await loadModule(importer);
-  const isBookmarked = await checkBookmark(category, filename);
+  const isBookmarked = useBookmarkStore.getState().isBookmarked({ category, filename });
 
   return { metaData, Content, isBookmarked };
 };

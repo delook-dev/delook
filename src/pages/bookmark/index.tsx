@@ -1,16 +1,22 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { MetaTags } from '@/components';
 import { SITE_URL } from '@/constants';
-import { BookmarkData, EmptyPage, getStorageList } from '@/features/bookmark';
+import { BookmarkData, EmptyPage } from '@/features/bookmark';
+import { useBookmarkStore } from '@/features/bookmark/store/useBookmarkStore';
 import { ErrorPage } from '@/features/error';
 import { PostSidebarLayout, RenderPost, usePostList } from '@/features/post';
 
 export default function BookmarkPage() {
+  const { bookmarks, initializeBookmarks } = useBookmarkStore();
+
+  useEffect(() => {
+    initializeBookmarks();
+  }, [initializeBookmarks]);
+
   const fetchPostList = useCallback(async () => {
-    const { saved: posts } = await getStorageList();
-    return posts;
-  }, []);
+    return bookmarks;
+  }, [bookmarks]);
 
   const { post, categoryList, selectedPost } = usePostList<BookmarkData>({
     fetchPostList,

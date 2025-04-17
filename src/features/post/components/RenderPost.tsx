@@ -3,15 +3,11 @@ import { MDXHeader } from './MDXHeader';
 import { MDXRender } from './MDXRender';
 
 export function RenderPost({ post }: { post: PostData }) {
-  const { category, filename, metaData, Content, isBookmarked } = post;
+  const { category, filename, metaData, Content } = post;
 
   return (
     <>
-      <MDXHeader
-        isBookmarked={isBookmarked}
-        metaData={metaData}
-        pathData={{ category, filename }}
-      />
+      <MDXHeader metaData={metaData} pathData={{ category, filename }} />
       <MDXRender>
         <Content />
       </MDXRender>

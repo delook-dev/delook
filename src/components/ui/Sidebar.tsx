@@ -8,6 +8,8 @@ import {
   Input,
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
   SheetTitle,
   Tooltip,
   TooltipContent,
@@ -198,6 +200,11 @@ const Sidebar = React.forwardRef<
 
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+          <SheetHeader>
+            <SheetDescription className="sr-only">
+              사이드바 메뉴를 포함하는 패널입니다.
+            </SheetDescription>
+          </SheetHeader>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
