@@ -27,9 +27,24 @@
 }
 
 .markdown blockquote {
-  @apply font-normal text-sm border-primary py-1 my-10;
+  @apply font-normal text-sm border-primary py-0 my-0 not-italic text-secondary-foreground/80;
+
   p {
-    @apply my-0 not-italic text-secondary-foreground;
+    @apply after:content-normal before:content-normal py-[2px] my-0;
+  }
+
+  ol,
+  ul {
+    @apply py-0 my-0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply py-0 my-0 text-secondary-foreground/80;
   }
 }
 
