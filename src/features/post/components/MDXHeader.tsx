@@ -26,7 +26,7 @@ export function MDXHeader({
           size={'xs'}
           variant="green"
         >
-          {metaData.language}
+          {metaData.language.toUpperCase()}
         </Badge>
         <IconButton
           name="북마크"
