@@ -31,7 +31,6 @@ export default defineConfig({
             hostname: 'https://www.delook.co.kr/',
           });
         }
-        return [];
       },
     }),
     viteStaticCopy({
