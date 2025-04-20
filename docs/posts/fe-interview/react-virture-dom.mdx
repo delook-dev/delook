@@ -15,22 +15,21 @@ dateModified: 2025.04.20
 {/* 간결하게 핵심을 먼저 전달하고, 필요한 경우 아래에 보충 설명을 추가하세요. */}
 
 Virtual DOM은 실제 DOM의 복사본으로, JavaScript 객체 형태로 메모리에 존재하는 가상의 DOM입니다.  
-React는 UI 상태(state 또는 props)가 변경될 때마다 새로운 Virtual DOM을 생성하고,
-이전 Virtual DOM과 비교(diffing)하여 바뀐 부분만 실제 DOM에 반영(reconciliation)합니다.
+React는 UI 상태(state 또는 props)가 변경될 때마다 새로운 Virtual DOM을 생성하고, <br/>
+이전 Virtual DOM과 비교(diffing)하여 바뀐 부분만 실제 DOM에 반영(reconciliation)합니다. <br/>
 이 과정을 통해 전체 DOM 조작을 최소화하며, 성능을 최적화할 수 있습니다.
 
-> #### Virtual DOM의 동작 원리
->
-> 1.  애플리케이션의 초기 UI를 기반으로 Virtual DOM이 메모리에 생성됩니다.
-> 2.  상태(state)나 props가 변경되면, 새로운 Virtual DOM이 다시 생성됩니다.
-> 3.  이전 Virtual DOM과 새 Virtual DOM을 비교하는 **diffing** 과정이 진행됩니다.
-> 4.  변경 사항이 발견되면, 실제 DOM에 반영하는 **reconciliation** 단계가 수행됩니다.
-> 5.  이때 바뀐 부분만 실제 DOM에 업데이트되므로, 브라우저 성능이 향상됩니다.
+#### Virtual DOM의 동작 원리
 
----
+1.  애플리케이션의 초기 UI를 기반으로 Virtual DOM이 메모리에 생성됩니다.
+2.  상태(state)나 props가 변경되면, 새로운 Virtual DOM이 다시 생성됩니다.
+3.  이전 Virtual DOM과 새 Virtual DOM을 비교하는 **diffing** 과정이 진행됩니다.
+4.  변경 사항이 발견되면, 실제 DOM에 반영하는 **reconciliation** 단계가 수행됩니다.
+5.  이때 바뀐 부분만 실제 DOM에 업데이트되므로, 브라우저 성능이 향상됩니다.
 
 ### Q. 그럼 state 또는 props가 변경될 때마다 diffing과 reconciliation이 매번 수행되나요?
 
-아니요. React(및 Virtual DOM을 사용하는 대부분의 프레임워크)는
+아니요. React(및 Virtual DOM을 사용하는 대부분의 프레임워크)는 <br/>
 여러 상태 변화를 하나로 묶어 처리하는 **batch update** 전략을 사용합니다.
+
 즉, 여러 개의 상태가 동시에 변경되더라도 한 번에 처리되도록 최적화되어 있어, 불필요한 연산을 줄이고 성능을 더욱 향상시킬 수 있습니다.
