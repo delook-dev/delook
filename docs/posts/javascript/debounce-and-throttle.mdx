@@ -1,0 +1,158 @@
+---
+title: 디바운싱과 쓰로틀링으로 성능 최적화하기
+type: 'concept'
+language: JavaScript
+tags:
+  - JavaScript
+  - Performance
+  - React
+dateModified: 2025.04.24
+---
+
+# 디바운싱과 쓰로틀링
+
+이벤트 핸들링 최적화를 위한 두 가지 중요한 기술로, 연속적으로 발생하는 이벤트를 제어하는 방법입니다.
+
+## 디바운싱 (Debounce)
+
+연속해서 호출되는 이벤트 중 마지막 이벤트만 실행되도록 하는 기술입니다. 디바운싱은 연속적인 이벤트 발생 시 일정 시간 동안 대기했다가 마지막 이벤트만 실행하는 방식으로 동작합니다.
+
+### 주요 특징
+
+- 연속된 이벤트가 발생하는 동안에는 핸들러가 실행되지 않습니다.
+- 마지막 이벤트 발생 후 일정 시간이 지나면 핸들러가 실행됩니다.
+- 주로 입력값 검증, API 호출, 창 크기 조절 이벤트 처리 등에 활용할 수 있습니다.
+
+#### React Custom Hook 구현 예시
+
+```tsx
+const useDebounce = <T,>(value: T, delay: number): T => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+  // value 값이 변경될 때마다 이전 타이머가 취소되고,
+  // 새로운 타이머가 설정됨으로써 debouncedValue 값의 변경이 지연되게 되어
+  // 최종적으로 마지막으로 변경된 value값을 반영한 debouncedValue가 리턴됩니다.
+
+  return debouncedValue;
+};
+```
+
+#### 사용 예시
+
+```tsx
+const SearchComponent = () => {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
+
+  const fetchSearchResults = useCallback(async () => {
+    // API 호출 함수 예시
+    const data = await fetch(...)
+  }, []);
+
+  useEffect(() => {
+    fetchSearchResults(debouncedSearch);
+  }, [fetchSearchResults, debouncedSearch]);
+  // 사용자의 입력이 계속되더라도 API 호출은 일어나지 않으며,
+  // 사용자의 입력이 끝난 후 delay 값인 300ms 후에 API 호출이 일어나게 됩니다.
+
+  return <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} />;
+};
+```
+
+## 쓰로틀링 (Throttle)
+
+일정 시간 간격으로 이벤트 실행을 제한하는 기술입니다. 쓰로틀링은 이벤트를 일정 주기로 실행하도록 보장하여 과도한 이벤트 발생을 방지합니다.
+
+### 주요 특징
+
+- 설정된 시간 간격으로만 이벤트 핸들러가 실행됩니다.
+- 주로 스크롤 이벤트, 실시간 데이터 업데이트 등에 활용할 수 있습니다.
+
+#### React Custom Hook 구현 예시
+
+```tsx
+const useThrottle = <T,>(value: T, delay: number): T => {
+  const [throttledValue, setThrottledValue] = useState<T>(value);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastExecutedRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    const now = Date.now();
+    const timeSinceLastExecution = now - lastExecutedRef.current;
+
+    // 마지막 이벤트 발생 후 delay 시간이 지났으면 즉시 이벤트를 실행하고
+    // 예약된 이벤트를 취소
+    if (timeSinceLastExecution >= delay) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setThrottledValue(value);
+      lastExecutedRef.current = now;
+    } else if (!timeoutRef.current) {
+      // 마지막 이벤트 발생 후 delay 시간이 지나지 않았을 때 예약된 이벤트가 없다면 예약
+      const remainingTime = delay - timeSinceLastExecution;
+      timeoutRef.current = setTimeout(() => {
+        setThrottledValue(value);
+        lastExecutedRef.current = Date.now();
+        timeoutRef.current = null;
+      }, remainingTime);
+    }
+    // 이미 이벤트가 예약된 상태에서 value가 바뀌어도 새 이벤트를 예약하지 않음
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [value, delay]);
+  // 마지막 실행 시점이 delay 이전일 때 예약된 타이머가 있다면 아무 동작도 하지 않아 예약된 동작을 실행함으로써
+  // 일정 주기 간격으로 이벤트 실행을 보장합니다.
+
+  return throttledValue;
+};
+```
+
+#### 사용 예시
+
+```tsx
+const ScrollComponent = () => {
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const throttledScrollTop = useThrottle(scrollTop, 300);
+
+  useEffect(() => {
+    // 이 로그는 300ms 간격으로만 출력됩니다.
+    console.log(`[Throttled] Scroll Top: ${throttledScrollTop}`);
+    // 스크롤 위치 변화에 따른 추가 작업 예시
+  }, [throttledScrollTop]);
+
+  return (
+    <div
+      onScroll={(e) => {
+        setScrollTop(e.currentTarget.scrollTop);
+      }}
+      style={{ height: '200px', overflowY: 'scroll', border: '1px solid black' }}
+    >
+      <p>Scroll down to see the effect in the console.</p>
+      <div style={{ height: '1000px' }} />
+    </div>
+  );
+};
+```
+
+## 구현 시 주의사항
+
+- UX와 성능을 고려하여 상황에 맞게 조절해야 합니다.
+- 메모리 누수 방지를 위해 useEffect의 클린업 함수를 반드시 구현해야 합니다.
+- 불필요한 리렌더링을 방지하기 위해 의존성 배열을 최적화해야 합니다.
