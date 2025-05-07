@@ -17,7 +17,7 @@
     "node": ">=20"
   },
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -100,7 +100,6 @@
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
     "vite-plugin-pages": "^0.33.0",
-    "vite-plugin-pages-sitemap": "^1.7.1",
     "vite-plugin-static-copy": "^2.3.0",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
