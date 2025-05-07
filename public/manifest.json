@@ -29,6 +29,6 @@
   },
   "permissions": ["storage"],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' https://delook.co.kr https://www.delook.co.kr; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }
