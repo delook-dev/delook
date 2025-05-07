@@ -63,7 +63,7 @@ jobs:
 
       # zip 파일을 GitHub Actions artifact로 업로드 (다음 job에서 사용)
       - name: Upload zip as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chrome-extension
           path: chrome-extension-${{ github.sha }}.zip
@@ -88,7 +88,7 @@ jobs:
 
       # 앞 단계에서 업로드한 artifact 다운로드
       - name: Download built artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: chrome-extension
 
