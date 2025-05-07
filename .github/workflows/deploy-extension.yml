@@ -1,0 +1,117 @@
+name: Deploy-Chrome-Extension
+
+on:
+  push:
+    branches:
+      - main
+
+# 버전 환경 변수 - prefix: major.minor.patch (자동으로 patch만 증가됨)
+env:
+  MAJOR: 1
+  MINOR: 0
+  PATCH: 0
+
+jobs:
+  build:
+    name: Build Chrome Extension
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # manifest.json의 버전을 자동으로 업데이트 (build 번호만 증가)
+      - name: Auto bump manifest version + version_name
+        run: |
+          current=$(jq -r '.version' manifest.json)
+          current_patch=$(echo "$current" | awk -F. '{print $4}')
+          next_patch=$((current_patch + 1))
+
+          version="$MAJOR.$MINOR.$PATCH.$next_patch"
+          version_name="Delook v$MAJOR.$MINOR.$PATCH • build $next_patch"
+
+          echo "Bumping version to $version"
+          jq ".version = \"$version\" | .version_name = \"$version_name\"" manifest.json > tmp.json && mv tmp.json manifest.json
+
+      # manifest.json의 version을 package.json에도 동기화
+      - name: Sync version from manifest.json to package.json
+        run: |
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "Syncing version to package.json: $VERSION"
+          jq ".version = \"$VERSION\"" package.json > tmp.json && mv tmp.json package.json
+
+      # 빌드 실행
+      - name: Build project
+        run: yarn build
+
+      # 빌드된 dist + manifest.json 압축
+      - name: Archive dist folder into zip
+        run: zip -r chrome-extension-${{ github.sha }}.zip dist
+
+      # zip 파일을 GitHub Actions artifact로 업로드 (다음 job에서 사용)
+      - name: Upload zip as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: chrome-extension
+          path: chrome-extension-${{ github.sha }}.zip
+
+  upload:
+    name: Upload to Chrome Web Store
+    runs-on: ubuntu-latest
+    needs: build
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    env:
+      EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # 앞 단계에서 업로드한 artifact 다운로드
+      - name: Download built artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: chrome-extension
+
+      # Chrome Web Store CLI 설치
+      - name: Install chrome-webstore-upload-cli
+        run: yarn global add chrome-webstore-upload-cli
+
+      # 확장 프로그램 업로드
+      - name: Upload extension zip
+        run: |
+          ZIP_FILE=$(ls *.zip)
+          chrome-webstore-upload upload \
+            --source $ZIP_FILE \
+            --extension-id ${{ secrets.EXTENSION_ID }} \
+            --client-id ${{ secrets.CI_GOOGLE_CLIENT_ID }} \
+            --client-secret ${{ secrets.CI_GOOGLE_CLIENT_SECRET }} \
+            --refresh-token ${{ secrets.CI_GOOGLE_REFRESH_TOKEN }}
+
+      # 업로드 후 Web Store에 게시(publish)
+      - name: Publish extension
+        run: |
+          chrome-webstore-upload publish \
+            --extension-id ${{ secrets.EXTENSION_ID }} \
+            --client-id ${{ secrets.CI_GOOGLE_CLIENT_ID }} \
+            --client-secret ${{ secrets.CI_GOOGLE_CLIENT_SECRET }} \
+            --refresh-token ${{ secrets.CI_GOOGLE_REFRESH_TOKEN }}

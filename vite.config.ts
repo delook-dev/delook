@@ -1,6 +1,5 @@
 import Pages from 'vite-plugin-pages';
 import { defineConfig } from 'vite';
-import generateSitemap from 'vite-plugin-pages-sitemap';
 import mdx from '@mdx-js/rollup';
 import prerender from '@prerenderer/rollup-plugin';
 import react from '@vitejs/plugin-react';
@@ -14,8 +13,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-const isProd = process.env.NODE_ENV === 'production';
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -24,14 +21,6 @@ export default defineConfig({
     svgr(),
     Pages({
       dirs: 'src/pages',
-      onRoutesGenerated: () => {
-        if (isProd) {
-          return generateSitemap({
-            routes: ['/', '/about', '/archive', '/bookmark'],
-            hostname: 'https://www.delook.co.kr/',
-          });
-        }
-      },
     }),
     viteStaticCopy({
       targets: [
