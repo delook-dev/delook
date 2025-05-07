@@ -49,7 +49,7 @@ jobs:
       # manifest.json의 version을 package.json에도 동기화
       - name: Sync version from manifest.json to package.json
         run: |
-          VERSION=$(jq -r '.version' manifest.json)
+          VERSION=$(jq -r '.version' public/manifest.json)
           echo "Syncing version to package.json: $VERSION"
           jq ".version = \"$VERSION\"" package.json > tmp.json && mv tmp.json package.json
 
