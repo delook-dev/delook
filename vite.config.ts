@@ -52,7 +52,7 @@ export default defineConfig({
       postProcess(renderedRoute) {
         renderedRoute.html = renderedRoute.html
           .replace(/http:/i, 'https:')
-          .replace(/(https:\/\/)?(localhost|127\.0\.0\.1):\d*/i, 'https://delook.co.kr');
+          .replace(/(https:\/\/)?(localhost|127\.0\.0\.1):\d*/i, '.');
       },
     }),
   ],
@@ -61,6 +61,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
+        popup: './popup.html',
       },
       output: {
         manualChunks: {

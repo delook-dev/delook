@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "description": "디룩은 새 탭을 열 때마다 랜덤한 프로그래밍 개념을 보여주어, 자연스럽게 지식을 확장할 수 있도록 돕는 확장 프로그램입니다.  꾸준한 학습을 통해 기술 면접과 실무에 자신감을 더하세요.",
   "action": {
-    "default_popup": "index.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
