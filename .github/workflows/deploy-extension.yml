@@ -3,7 +3,7 @@ name: Deploy-Chrome-Extension
 on:
   push:
     branches:
-      - main
+      - production
 
 # 버전 환경 변수 - prefix: major.minor.patch (자동으로 patch만 증가됨)
 env:
