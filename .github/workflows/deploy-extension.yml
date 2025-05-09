@@ -46,7 +46,7 @@ jobs:
           version="$MAJOR.$MINOR.$NEXT_PATCH"
           version_name="$version ($today)"
 
-          echo "📦 Bumping version to $version"
+          echo "Bumping version to $version"
           jq ".version = \"$version\" | .version_name = \"$version_name\"" public/manifest.json > tmp.json && mv tmp.json public/manifest.json
 
       # manifest.json의 version을 package.json에도 동기화
