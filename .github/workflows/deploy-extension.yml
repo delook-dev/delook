@@ -3,13 +3,13 @@ name: Deploy-Chrome-Extension
 on:
   push:
     branches:
-      - main
+      - production
 
 # 버전 환경 변수 - prefix: major.minor.patch (자동으로 patch만 증가됨)
 env:
   MAJOR: 1
   MINOR: 0
-  PATCH: 0
+  PATCH: 1
 
 jobs:
   build:
@@ -37,13 +37,14 @@ jobs:
       - name: Auto bump manifest version + version_name
         run: |
           current=$(jq -r '.version' public/manifest.json)
-          current_patch=$(echo "$current" | awk -F. '{print $4}')
-          next_patch=$((current_patch + 1))
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$current"
+
+          NEXT_PATCH=$((PATCH + 1))
 
           today=$(date "+%Y.%m.%d")
 
-          version="$MAJOR.$MINOR.$PATCH.$next_patch"
-          version_name="$MAJOR.$MINOR.$PATCH ($today)"
+          version="$MAJOR.$MINOR.$NEXT_PATCH"
+          version_name="$version ($today)"
 
           echo "Bumping version to $version"
           jq ".version = \"$version\" | .version_name = \"$version_name\"" public/manifest.json > tmp.json && mv tmp.json public/manifest.json
