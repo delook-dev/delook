@@ -42,8 +42,8 @@ jobs:
 
           today=$(date "+%Y.%m.%d")
 
-          version="$MAJOR.$MINOR.$PATCH$.next_patch"
-          version_name="$MAJOR.$MINOR.$PATCH ($today)"
+          version="$MAJOR.$MINOR.$PATCH.$next_patch"
+          version_name="v$MAJOR.$MINOR.$PATCH ($today) "
 
           echo "Bumping version to $version"
           jq ".version = \"$version\" | .version_name = \"$version_name\"" public/manifest.json > tmp.json && mv tmp.json public/manifest.json
