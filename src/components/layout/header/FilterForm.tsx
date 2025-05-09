@@ -14,7 +14,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components';
-import { toast, useFilterCategory } from '@/hooks';
+import { useFilterCategory } from '@/features/post';
+import { toast } from '@/hooks';
 
 const FormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
