@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react';
 
 import { MetaTags } from '@/components';
-import { getRandomPost, PostData, RenderPost } from '@/features/post';
+import { getRandomPost, PostData, RenderPost, useFilterStore } from '@/features/post';
 
 export default function Home() {
   const [post, setPost] = useState<PostData | null>(null);
 
-  useEffect(() => {
-    getRandomPost().then((v) => setPost(v));
-  }, []);
+  const { filter } = useFilterStore();
 
-  if (!post) return;
+  const fetchRandomPost = async () => {
+    const randomPost = await getRandomPost();
+    setPost(randomPost);
+  };
+
+  useEffect(() => {
+    fetchRandomPost();
+  }, [filter]);
+
+  if (!post) return null;
 
   return (
     <>
