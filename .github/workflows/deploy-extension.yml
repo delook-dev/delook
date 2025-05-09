@@ -37,11 +37,12 @@ jobs:
       - name: Auto bump manifest version + version_name
         run: |
           current=$(jq -r '.version' public/manifest.json)
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$current"
+          current_patch=$(echo "$current" | awk -F. '{print $4}')
+          next_patch=$((current_patch + 1))
 
           today=$(date "+%Y.%m.%d")
 
-          version="$MAJOR.$MINOR.$PATCH"
+          version="$MAJOR.$MINOR.$PATCH$.next_patch"
           version_name="$MAJOR.$MINOR.$PATCH ($today)"
 
           echo "Bumping version to $version"
