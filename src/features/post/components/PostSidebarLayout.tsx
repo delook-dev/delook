@@ -36,7 +36,7 @@ export const PostSidebarLayout = ({
 
   return (
     <SidebarLayout sidebarMenu={sidebarMenu}>
-      <div className="mx-auto max-w-3xl md:pl-6 md:pt-4">{children}</div>
+      <div className="mx-auto h-full max-w-3xl md:pl-6 md:pt-4">{children}</div>
     </SidebarLayout>
   );
 };

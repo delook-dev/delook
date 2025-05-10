@@ -4,21 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-  overflow-y: scroll;
-}
-
-body {
-  @apply antialiased;
-
-  font-family:
-    'Pretendard Variable',
-    Pretendard,
-    -apple-system,
-    serif;
-}
-
 @theme {
   --font-prtendard: 'Pretendard Variable', Pretendard, -apple-system, serif;
   --breakpoint-xs: 20rem;
@@ -28,8 +13,16 @@ body {
   * {
     @apply border-border;
   }
+  html {
+    @apply h-full scroll-smooth;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply h-full antialiased bg-background text-foreground overflow-hidden;
+    font-family:
+      'Pretendard Variable',
+      Pretendard,
+      -apple-system,
+      serif;
   }
 }
 
