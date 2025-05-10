@@ -1,4 +1,5 @@
 import tailwindTypography from '@tailwindcss/typography';
+import scrollbarPlugin from 'tailwind-scrollbar';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
@@ -88,5 +89,5 @@ export default {
     },
   },
 
-  plugins: [tailwindcssAnimate, tailwindTypography],
+  plugins: [tailwindcssAnimate, tailwindTypography, scrollbarPlugin],
 };

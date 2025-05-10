@@ -4,13 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) hsl(var(--background));
-}
-
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
 }
 
 body {
@@ -117,14 +113,19 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 8px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 5px;
+  background-color: hsl(var(--border) / 0.5);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border) / 0.5) transparent;
 }
