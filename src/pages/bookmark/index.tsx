@@ -5,7 +5,7 @@ import { SITE_URL } from '@/constants';
 import { BookmarkData, EmptyPage } from '@/features/bookmark';
 import { useBookmarkStore } from '@/features/bookmark/store/useBookmarkStore';
 import { ErrorPage } from '@/features/error';
-import { PostSidebarLayout, RenderPost, usePostList } from '@/features/post';
+import { RenderPost, usePostList } from '@/features/post';
 
 export default function BookmarkPage() {
   const { bookmarks, initializeBookmarks } = useBookmarkStore();
@@ -44,9 +44,7 @@ export default function BookmarkPage() {
         url={`${SITE_URL}/bookmark?category=${category}&filename=${filename}`}
         keywords={`${category}, ${title}, ${filename}`}
       />
-      <PostSidebarLayout categoryList={categoryList}>
-        <RenderPost post={{ ...post, ...selectedPost }} />
-      </PostSidebarLayout>
+      <RenderPost post={{ ...post, ...selectedPost }} />
     </>
   );
 }

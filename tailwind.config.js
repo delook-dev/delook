@@ -10,6 +10,7 @@ export default {
     extend: {
       screens: {
         xs: '20rem',
+        '2xl': '1500px',
       },
       colors: {
         background: 'hsl(var(--background))',

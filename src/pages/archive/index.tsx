@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { MetaTags } from '@/components';
 import { SITE_URL } from '@/constants';
 import { ErrorPage } from '@/features/error';
-import { getPostsByCategory, PostSidebarLayout, RenderPost, usePostList } from '@/features/post';
+import { getPostsByCategory, RenderPost, usePostList } from '@/features/post';
 
 export default function ArchivePage() {
   const fetchPostList = useCallback(async () => {
@@ -11,7 +11,7 @@ export default function ArchivePage() {
     return posts;
   }, []);
 
-  const { categoryList, post, selectedPost } = usePostList({ fetchPostList });
+  const { post, selectedPost } = usePostList({ fetchPostList });
 
   if (!post || !selectedPost) {
     return <ErrorPage type="NOT_FOUND" />;
@@ -30,9 +30,7 @@ export default function ArchivePage() {
         url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
         keywords={`${category}, ${title}, ${filename}`}
       />
-      <PostSidebarLayout categoryList={categoryList}>
-        <RenderPost post={{ ...post, ...selectedPost }} />
-      </PostSidebarLayout>
+      <RenderPost post={{ ...post, ...selectedPost }} />
     </>
   );
 }

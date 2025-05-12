@@ -136,7 +136,7 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              'group/sidebar-wrapper flex w-full has-[[data-variant=inset]]:bg-sidebar',
+              'absolute group/sidebar-wrapper w-full flex has-[[data-variant=inset]]:bg-sidebar top-0 z-10 2xl:-left-[22.5rem]',
               className,
             )}
             ref={ref}
@@ -209,7 +209,7 @@ const Sidebar = React.forwardRef<
             data-sidebar="sidebar"
             data-mobile="true"
             className={cn(
-              'xs:top-[6.5rem] top-[8.5rem] h-[calc(100vh-8.5rem)] xs:h-[calc(100vh-6rem)] w-[--sidebar-width] bg-background p-0 pb-10 text-sidebar-foreground overflow-y-auto',
+              'xs:top-[6.25rem] sm:!top-[6.5rem] h-[calc(100vh-12.5rem)] xs:h-[calc(100vh-6rem)] w-[--sidebar-width] bg-background p-0 pb-10 text-sidebar-foreground overflow-y-auto',
               '[&>button]:hidden',
               className,
             )}
@@ -229,7 +229,7 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="group peer hidden border-r border-dashed text-sidebar-foreground md:fixed"
+        className="group peer hidden border-r border-dashed text-sidebar-foreground 2xl:block"
         data-state={state}
         data-collapsible={state === 'collapsed' ? collapsible : ''}
         data-variant={variant}
