@@ -36,7 +36,6 @@
     ]
   },
   "dependencies": {
-    "@radix-ui/react-scroll-area": "^1.2.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.1"
