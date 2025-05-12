@@ -248,7 +248,8 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            'fixed hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex border-dashed',
+            'fixed hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex border-dashed',
+            'h-[calc(100vh-11rem)]',
             side === 'left'
               ? 'group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
               : 'group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -262,7 +263,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex size-full flex-col overflow-auto bg-transparent group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="flex size-full flex-col overflow-auto bg-transparent pb-[4.5rem] group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
