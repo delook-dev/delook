@@ -28,9 +28,9 @@ export default function BookmarkPage() {
     fetchPostList,
   });
 
-  if (!post || !selectedPost) return null;
   if (categoryList.length === 0) return <EmptyPage />;
   if (isError) return <ErrorPage type="NOT_FOUND" />;
+  if (!post || !selectedPost) return null;
 
   const {
     metaData: { title },
