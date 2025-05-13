@@ -5,5 +5,6 @@ export * from './components/RenderPost';
 export * from './hooks/useFilterCategory';
 export * from './hooks/usePostList';
 export * from './store/useFilterStore';
+export * from './store/usePostStore';
 export * from './types/postTypes';
 export * from './utils/postUtils';
