@@ -25,7 +25,7 @@ export default function ArchivePage() {
   return (
     <>
       <MetaTags
-        title={`${category}/${title}`}
+        title={`[${category}] ${title}`}
         description={`${category}의${title}에 대한 내용`}
         url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
         keywords={`${category}, ${title}, ${filename}`}
