@@ -1,24 +1,35 @@
 import { useEffect } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { MetaTags } from '@/components';
-import { RenderPost, useFilterStore } from '@/features/post';
-import { usePostStore } from '@/features/post/store/usePostStore';
+import { ErrorPage } from '@/features/error';
+import { RenderPost, useFilterStore, usePostStore } from '@/features/post';
 
-export default function Home() {
+function PostContent() {
   const { filter } = useFilterStore();
-  const { currentPost, randomPost } = usePostStore();
+  const { currentPost, randomPost, isError } = usePostStore(
+    useShallow((state) => ({
+      currentPost: state.currentPost,
+      randomPost: state.randomPost,
+      isError: state.isError,
+    })),
+  );
 
   useEffect(() => {
     randomPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter, randomPost]);
 
   if (!currentPost) return null;
+  if (isError) return <ErrorPage type="NOT_FOUND" />;
 
+  return <RenderPost post={currentPost} />;
+}
+
+export default function Home() {
   return (
     <>
       <MetaTags title={'디룩 | 성장하는 개발자의 탭'} />
-      <RenderPost post={currentPost} />
+      <PostContent />
     </>
   );
 }

@@ -1,18 +1,24 @@
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { MetaTags } from '@/components';
 import { SITE_URL } from '@/constants';
-import { BookmarkData, EmptyPage } from '@/features/bookmark';
-import { useBookmarkStore } from '@/features/bookmark/store/useBookmarkStore';
+import { BookmarkData, EmptyPage, useBookmarkStore } from '@/features/bookmark';
 import { ErrorPage } from '@/features/error';
 import { PostSidebarLayout, RenderPost, usePostList } from '@/features/post';
 
 export default function BookmarkPage() {
-  const { bookmarks, initializeBookmarks } = useBookmarkStore();
+  const { bookmarks, getBookmarks, isError } = useBookmarkStore(
+    useShallow((state) => ({
+      bookmarks: state.bookmarks,
+      getBookmarks: state.getBookmarks,
+      isError: state.isError,
+    })),
+  );
 
   useEffect(() => {
-    initializeBookmarks();
-  }, [initializeBookmarks]);
+    getBookmarks();
+  }, [getBookmarks]);
 
   const fetchPostList = useCallback(async () => {
     return bookmarks;
@@ -22,18 +28,13 @@ export default function BookmarkPage() {
     fetchPostList,
   });
 
-  if (categoryList.length === 0) {
-    return <EmptyPage />;
-  }
-
-  if (!post || !selectedPost) {
-    return <ErrorPage type="NOT_FOUND" />;
-  }
+  if (!post || !selectedPost) return null;
+  if (categoryList.length === 0) return <EmptyPage />;
+  if (isError) return <ErrorPage type="NOT_FOUND" />;
 
   const {
     metaData: { title },
   } = post;
-
   const { category, filename } = selectedPost;
 
   return (

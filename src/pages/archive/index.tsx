@@ -11,11 +11,11 @@ export default function ArchivePage() {
     return posts;
   }, []);
 
-  const { categoryList, post, selectedPost } = usePostList({ fetchPostList });
+  const { categoryList, post, selectedPost, isError } = usePostList({ fetchPostList });
 
-  if (!post || !selectedPost) {
-    return <ErrorPage type="NOT_FOUND" />;
-  }
+  if (!post || !selectedPost) return null;
+  if (isError) return <ErrorPage type="NOT_FOUND" />;
+
   const {
     metaData: { title },
   } = post;
