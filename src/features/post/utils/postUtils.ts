@@ -7,7 +7,7 @@ import {
   PostPathData,
   SinglePostViewData,
 } from '@/features/post';
-import { getFromStorage } from '@/lib';
+import { getFromStorage, saveToStorage } from '@/lib';
 
 const postModules = import.meta.glob(`/docs/posts/**/*.mdx`, {
   eager: false,
@@ -161,8 +161,14 @@ const getFilteredEntries = async (): Promise<[string, () => Promise<PostModuleDa
  */
 const getRandomPost = async (): Promise<PostData> => {
   const postPathList = await getFilteredEntries();
+  const recentPosts = (await getFromStorage(STORAGE_KEYS.recentPosts)) || [];
 
-  const randomEntry = postPathList[Math.floor(Math.random() * postPathList.length)];
+  // 최근 본 포스트를 제외한 포스트 목록
+  const availablePosts = postPathList.filter(([path]) => !recentPosts.includes(path));
+
+  const targetPosts = availablePosts.length > 0 ? availablePosts : postPathList;
+  const randomEntry = targetPosts[Math.floor(Math.random() * targetPosts.length)];
+
   const [path, importer] = randomEntry;
 
   const post = await generatePostData(path, importer);
@@ -170,6 +176,9 @@ const getRandomPost = async (): Promise<PostData> => {
   if (!post) {
     throw new Error(`유효하지 않은 MDX 경로입니다: ${path}`);
   }
+
+  const updatedRecentPosts = [path, ...recentPosts].slice(0, 5);
+  await saveToStorage(STORAGE_KEYS.recentPosts, updatedRecentPosts);
 
   return post;
 };
