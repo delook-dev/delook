@@ -1,9 +1,11 @@
-import { Bookmark, RefreshCcw } from 'lucide-react';
+import { Bookmark, LucideShare2, RefreshCcw } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 import { Badge, IconButton } from '@/components';
+import { SITE_URL, ToastMsg } from '@/constants';
 import { useBookmark } from '@/features/bookmark';
 import { PostMetaData, PostPathData, usePostStore } from '@/features/post';
+import { toast } from '@/hooks';
 
 const ColorIconFilled = '#8c3fff';
 
@@ -16,11 +18,21 @@ export function MDXHeader({
 }) {
   const pathname = useLocation().pathname;
 
-  const refreshPost = usePostStore((state) => state.randomPost);
+  const { randomPost } = usePostStore();
+
   const { isBookmarked, handleBookmark } = useBookmark({
     metaData,
     pathData,
   });
+
+  const handleShare = () => {
+    const { category, filename } = pathData;
+    const url = `${SITE_URL}/archive?category=${category}&filename=${filename}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: ToastMsg.copyLink,
+    });
+  };
 
   return (
     <header className="mt-3 flex flex-col items-start border-b border-b-muted pb-4">
@@ -34,16 +46,21 @@ export function MDXHeader({
         </Badge>
         <div className="flex gap-1">
           {pathname === '/' && (
-            <IconButton name="새로 불러오기" onClick={refreshPost} tooltipContent="새로 불러오기">
+            <IconButton name="새로 불러오기" onClick={randomPost} tooltipContent="새로 불러오기">
               <RefreshCcw />
             </IconButton>
           )}
-          <IconButton name="북마크" onClick={handleBookmark} tooltipContent="북마크 저장">
+
+          <IconButton name="북마크" onClick={handleBookmark} tooltipContent="북마크">
             {isBookmarked ? (
               <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
             ) : (
               <Bookmark size={30} />
             )}
+          </IconButton>
+
+          <IconButton name="공유하기" onClick={handleShare} tooltipContent="링크 복사">
+            <LucideShare2 />
           </IconButton>
         </div>
       </div>
