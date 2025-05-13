@@ -29,27 +29,34 @@ export function usePostList<T extends BasePostData>({
   const [postsByCategory, setPostsByCategory] = useState<Categorized<T>>({});
   const [selectedPost, setSelectedPost] = useState<PostPathData | null>(null);
   const [post, setPost] = useState<SinglePostViewData | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
 
   useEffect(() => {
     const fetch = async () => {
-      const posts = await fetchPostList();
-      setPostsByCategory(posts);
+      try {
+        const posts = await fetchPostList();
+        setPostsByCategory(posts);
 
-      const firstCategory = Object.keys(posts)[0];
-      const firstPost = posts[firstCategory]?.[0];
+        const firstCategory = Object.keys(posts)[0];
+        const firstPost = posts[firstCategory]?.[0];
 
-      const selected =
-        category && filename
-          ? { category, filename }
-          : { category: firstCategory, filename: firstPost?.filename };
+        const selected =
+          category && filename
+            ? { category, filename }
+            : { category: firstCategory, filename: firstPost?.filename };
 
-      setSelectedPost(selected);
+        setSelectedPost(selected);
 
-      if (selected) {
-        const postData = await getPost(selected);
-        setPost(postData);
+        if (selected) {
+          const postData = await getPost(selected);
+          setPost(postData);
+        }
+      } catch (error) {
+        console.error('포스트 목록 조회 오류:', error);
+        setIsError(true);
       }
     };
+
     fetch();
   }, [category, filename, fetchPostList]);
 
@@ -63,5 +70,5 @@ export function usePostList<T extends BasePostData>({
     }));
   }, [postsByCategory]);
 
-  return { postsByCategory, selectedPost, post, categoryList };
+  return { postsByCategory, selectedPost, post, categoryList, isError };
 }

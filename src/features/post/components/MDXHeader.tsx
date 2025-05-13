@@ -1,8 +1,11 @@
-import { Bookmark } from 'lucide-react';
+import { Bookmark, LucideShare2, RefreshCcw } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 import { Badge, IconButton } from '@/components';
+import { SITE_URL, ToastMsg } from '@/constants';
 import { useBookmark } from '@/features/bookmark';
-import { PostMetaData, PostPathData } from '@/features/post';
+import { PostMetaData, PostPathData, usePostStore } from '@/features/post';
+import { toast } from '@/hooks';
 
 const ColorIconFilled = '#8c3fff';
 
@@ -13,10 +16,23 @@ export function MDXHeader({
   metaData: PostMetaData;
   pathData: PostPathData;
 }) {
+  const pathname = useLocation().pathname;
+
+  const { randomPost } = usePostStore();
+
   const { isBookmarked, handleBookmark } = useBookmark({
     metaData,
     pathData,
   });
+
+  const handleShare = () => {
+    const { category, filename } = pathData;
+    const url = `${SITE_URL}/archive?category=${category}&filename=${filename}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: ToastMsg.copyLink,
+    });
+  };
 
   return (
     <header className="mt-3 flex flex-col items-start border-b border-b-muted pb-4">
@@ -28,17 +44,25 @@ export function MDXHeader({
         >
           {metaData.language.toUpperCase()}
         </Badge>
-        <IconButton
-          name="북마크"
-          buttonProps={{ className: 'hover:bg-transparent' }}
-          onClick={handleBookmark}
-        >
-          {isBookmarked ? (
-            <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
-          ) : (
-            <Bookmark size={30} />
+        <div className="flex gap-1">
+          {pathname === '/' && (
+            <IconButton name="새로 불러오기" onClick={randomPost} tooltipContent="새로 불러오기">
+              <RefreshCcw />
+            </IconButton>
           )}
-        </IconButton>
+
+          <IconButton name="북마크" onClick={handleBookmark} tooltipContent="북마크">
+            {isBookmarked ? (
+              <Bookmark size={30} color={ColorIconFilled} fill={ColorIconFilled} />
+            ) : (
+              <Bookmark size={30} />
+            )}
+          </IconButton>
+
+          <IconButton name="공유하기" onClick={handleShare} tooltipContent="링크 복사">
+            <LucideShare2 />
+          </IconButton>
+        </div>
       </div>
 
       <h1 className="mb-3 text-3xl font-medium">{metaData.title}</h1>
