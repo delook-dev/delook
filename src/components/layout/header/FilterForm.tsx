@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components';
+import { ToastMsg } from '@/constants';
 import { useFilterCategory } from '@/features/post';
 import { toast } from '@/hooks';
 
@@ -40,7 +41,7 @@ export function FilterForm() {
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     saveSettings(data.items);
     toast({
-      title: '필터 설정 완료! 🎉',
+      title: ToastMsg.filterSuccess,
     });
   };
 
