@@ -26,6 +26,13 @@ function PostContent() {
 }
 
 export default function Home() {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant',
+    });
+  }, []);
+
   return (
     <>
       <MetaTags title={'디룩 | 성장하는 개발자의 탭'} />

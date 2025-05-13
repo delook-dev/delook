@@ -11,7 +11,7 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [location.pathname, location.search, location.hash]);
 
   return (
     <>
