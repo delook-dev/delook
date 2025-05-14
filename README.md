@@ -1,21 +1,20 @@
-b# 디룩 (Delook)
+# 디룩 (Delook)
 
 > 성장하는 개발자를 위한 오픈소스 기반 지식 공유 플랫폼</br>
 
 <p align="center">
+  <img width="600" src="public/images/og-image.png" alt="Delook OG Image Preview" />
+</p>
+<p align="center">
   <a href="https://www.delook.co.kr" target="_blank">
-    <strong>Delook ↗️</strong>
+    <strong>Delook 바로가기</strong>
   </a>
 </p>
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/%EB%94%94%EB%A3%A9delook/ehfclaaaeofpkbgankkeokjgodoejahp" target="_blank">
-    <strong>Delook 확장 프로그램 ↗️</strong>
+    <strong>Delook 확장 프로그램 바로가기</strong>
   </a>
 </p>
-<p align="center">
-  <img width="600" src="public/images/og-image.png" alt="Delook OG Image Preview" />
-</p>
-
 디룩(Delook)은 브라우저 새 탭에서 프로그래밍 지식을 학습할 수 있도록 돕는 크롬 확장 프로그램입니다.
 
 프로젝트가 마음에 드셨다면 `⭐️ star`로 응원해주세요!
@@ -46,7 +45,7 @@ b# 디룩 (Delook)
 1. [크롬 웹 스토어](https://chromewebstore.google.com/detail/%EB%94%94%EB%A3%A9delook/ehfclaaaeofpkbgankkeokjgodoejahp)에서 디룩을 "Chrome에 추가" 해주세요.
 2. 설치가 완료되면 새 탭에서 디룩이 자동으로 실행됩니다.
 
-※ 자동으로 실행되지 않는다면, </br>
+※ 자동으로 실행되지 않는다면, 
 `브라우저 설정 > 시작시 설정`에서 디룩을 기본 `새 탭 페이지 열기`로 설정해주세요.
 
 ## 기여
@@ -56,6 +55,6 @@ b# 디룩 (Delook)
 - 콘텐츠 기여
 - 버그 리포트 및 개선
 
-> 기능 제안이나 UI 개선은 [이슈](https://github.com/delook-dev/delook/issues) 또는 [디스커션](https://github.com/delook-dev/delook/discussions)을 통해 남겨주시면 관리자가 검토 후 작업하도록 하겠습니다.
+자세한 기여 방법은 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
 
-> 자세한 기여 방법은 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
+> 기능 제안이나 UI 개선은 [Issues](https://github.com/delook-dev/delook/issues) 또는 [Discussions](https://github.com/delook-dev/delook/discussions)을 통해 남겨주시면 관리자가 검토 후 작업하도록 하겠습니다.
