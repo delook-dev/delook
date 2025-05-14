@@ -11,11 +11,11 @@ export default function ArchivePage() {
     return posts;
   }, []);
 
-  const { categoryList, post, selectedPost } = usePostList({ fetchPostList });
+  const { categoryList, post, selectedPost, isError } = usePostList({ fetchPostList });
 
-  if (!post || !selectedPost) {
-    return <ErrorPage type="NOT_FOUND" />;
-  }
+  if (!post || !selectedPost) return null;
+  if (isError) return <ErrorPage type="NOT_FOUND" />;
+
   const {
     metaData: { title },
   } = post;
@@ -25,7 +25,7 @@ export default function ArchivePage() {
   return (
     <>
       <MetaTags
-        title={`${category}/${title}`}
+        title={`[${category}] ${title}`}
         description={`${category}의${title}에 대한 내용`}
         url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
         keywords={`${category}, ${title}, ${filename}`}

@@ -14,7 +14,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components';
-import { toast, useFilterCategory } from '@/hooks';
+import { ToastMsg } from '@/constants';
+import { useFilterCategory } from '@/features/post';
+import { toast } from '@/hooks';
 
 const FormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
@@ -39,7 +41,7 @@ export function FilterForm() {
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     saveSettings(data.items);
     toast({
-      title: '필터 설정 완료! 🎉',
+      title: ToastMsg.filterSuccess,
     });
   };
 

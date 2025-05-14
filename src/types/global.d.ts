@@ -10,5 +10,6 @@ declare global {
   type StorageValueMap = {
     saved_posts: CategorizedBookmarks;
     settings_category: FilteredCategory;
+    recent_posts: string[];
   };
 }

@@ -2,7 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 
 import { MetaTags } from '@/components';
 import { Button, ExternalLink } from '@/components/ui';
-import { CONTRIBUTE_SERVICE, SITE_URL } from '@/constants';
+import { CONTRIBUTE_SERVICE, SITE_URL, STORE_URL } from '@/constants';
 
 import { contributeContents, mainContents } from './_content';
 
@@ -19,7 +19,7 @@ export default function AboutPage() {
               {mainContents}
             </p>
             <Button className="my-5 w-fit rounded-full px-3 text-xs" size={'sm'} asChild>
-              <ExternalLink href={''}>
+              <ExternalLink href={STORE_URL}>
                 다운로드
                 <ArrowUpRight />
               </ExternalLink>
