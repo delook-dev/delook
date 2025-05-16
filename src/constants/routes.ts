@@ -9,6 +9,7 @@ const ROUTES = {
   BOOKMARK: `/bookmark`,
   ARCHIVE: `/archive`,
   ABOUT: `/about`,
+  PRIVACY: `/privacy`,
 } as const;
 
 //external links
