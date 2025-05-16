@@ -28,26 +28,22 @@ export default function BookmarkPage() {
     fetchPostList,
   });
 
-  if (categoryList.length === 0) return <EmptyPage />;
-  if (isError) return <ErrorPage type="NOT_FOUND" />;
-  if (!post || !selectedPost) return null;
+  const Contents = () => {
+    if (categoryList.length === 0) return <EmptyPage />;
+    if (isError) return <ErrorPage type="NOT_FOUND" />;
+    if (!post || !selectedPost) return null;
 
-  const {
-    metaData: { title },
-  } = post;
-  const { category, filename } = selectedPost;
-
-  return (
-    <>
-      <MetaTags
-        title={`[${category}] ${title}`}
-        description={`${category}의${title}에 대한 내용`}
-        url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
-        keywords={`${category}, ${title}, ${filename}`}
-      />
+    return (
       <PostSidebarLayout categoryList={categoryList}>
         <RenderPost post={{ ...post, ...selectedPost }} />
       </PostSidebarLayout>
+    );
+  };
+
+  return (
+    <>
+      <MetaTags title={'디룩 | 북마크'} url={`${SITE_URL}/bookmark`} />
+      {Contents()}
     </>
   );
 }
