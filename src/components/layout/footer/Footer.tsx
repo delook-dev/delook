@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import { ExternalLink } from '@/components';
 
 import { footerContents } from './_content';
@@ -19,18 +21,19 @@ export default function Footer() {
 
       <ExternalLink
         className="inline-block whitespace-pre-wrap font-normal text-primary/70 md:text-center"
-        href={footerContents.links[1].href}
+        href={footerContents.outLinks[1].href}
       >
         {footerContents.intro}
       </ExternalLink>
 
       <div className="flex flex-col gap-1 text-foreground/80 md:flex-row md:gap-3">
-        {footerContents.links.map((info) => (
-          <ExternalLink
-            className="hover:text-primary hover:underline"
-            href={info.href}
-            key={info.text}
-          >
+        {footerContents.inLinks.map((info) => (
+          <Link className="hover:text-primary hover:underline" to={info.href} key={info.text}>
+            {info.text}
+          </Link>
+        ))}
+        {footerContents.outLinks.map((info) => (
+          <ExternalLink href={info.href} key={info.text}>
             {info.text}
           </ExternalLink>
         ))}

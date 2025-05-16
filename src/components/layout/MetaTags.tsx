@@ -20,6 +20,7 @@ export const MetaTags = ({ title, description, url, keywords }: MetaTagsProps) =
 
   return (
     <Helmet prioritizeSeoTags>
+      <title>{title}</title>
       <meta name="title" content={title} />
       <meta name="description" content={metaDescription} />
 
