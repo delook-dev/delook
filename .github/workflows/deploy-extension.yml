@@ -5,12 +5,6 @@ on:
     branches:
       - production
 
-# 버전 환경 변수 - prefix: major.minor.patch (자동으로 patch만 증가됨)
-env:
-  MAJOR: 1
-  MINOR: 0
-  PATCH: 1
-
 jobs:
   build:
     name: Build Chrome Extension
@@ -35,26 +29,7 @@ jobs:
 
       # manifest.json의 버전을 자동으로 업데이트 (build 번호만 증가)
       - name: Auto bump manifest version + version_name
-        run: |
-          current=$(jq -r '.version' public/manifest.json)
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$current"
-
-          NEXT_PATCH=$((PATCH + 1))
-
-          today=$(date "+%Y.%m.%d")
-
-          version="$MAJOR.$MINOR.$NEXT_PATCH"
-          version_name="$version ($today)"
-
-          echo "Bumping version to $version"
-          jq ".version = \"$version\" | .version_name = \"$version_name\"" public/manifest.json > tmp.json && mv tmp.json public/manifest.json
-
-      # manifest.json의 version을 package.json에도 동기화
-      - name: Sync version from manifest.json to package.json
-        run: |
-          VERSION=$(jq -r '.version' public/manifest.json)
-          echo "Syncing version to package.json: $VERSION"
-          jq ".version = \"$VERSION\"" package.json > tmp.json && mv tmp.json package.json
+        run: yarn extension-version
 
       # 빌드 실행
       - name: Build project
