@@ -2,7 +2,7 @@
 const isExtension = typeof chrome !== 'undefined' && !!chrome.storage;
 
 /**
- * Extenstion 스토리지 데이터를 반환
+ * Extension 스토리지 데이터를 반환
  * @param key 가져올 키 이름
  * @returns StorageValueMap[K] 해당 키의 값
  */
@@ -17,7 +17,7 @@ const getFromExtensionStorage = <K extends StorageKeyValue>(
 };
 
 /**
- * Extenstion 스토리지에 데이터를 저장
+ * Extension 스토리지에 데이터를 저장
  * @param key StorageKey
  * @param data StorageValueMap[K]
  * @returns boolean 성공여부
