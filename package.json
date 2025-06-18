@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "vite",
     "build": "rm -rf build && tsc -b && vite build",
+    "extension-version": "node scripts/extension-version.js",
     "lint": "eslint ./src",
     "lint:debug": "eslint ./src --debug",
     "lint:fix": "eslint ./src --fix",
