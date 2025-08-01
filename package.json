@@ -28,7 +28,8 @@
     "lint:fix": "eslint ./src --fix",
     "preview": "vite preview",
     "format": "prettier --check \"src/**/*\" --write",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "postinstall": "git config core.hooksPath .husky && chmod +x .husky/pre-commit && chmod +x .husky/commit-msg"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
