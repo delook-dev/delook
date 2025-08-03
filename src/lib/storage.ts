@@ -1,5 +1,5 @@
 //익스텐션 환경 여부 확인
-const isExtension = typeof chrome !== 'undefined' && !!chrome.storage;
+export const isChromeExtension = typeof chrome !== 'undefined' && !!chrome.storage;
 
 /**
  * Extension 스토리지 데이터를 반환
@@ -41,7 +41,7 @@ const saveToExtensionStorage = <K extends StorageKeyValue>(
 export const getFromStorage = async <K extends StorageKeyValue>(
   key: K,
 ): Promise<StorageValueMap[K] | null> => {
-  if (isExtension) {
+  if (isChromeExtension) {
     return await getFromExtensionStorage(key);
   }
 
@@ -59,7 +59,7 @@ export const saveToStorage = async <K extends StorageKeyValue>(
   key: K,
   data: StorageValueMap[K],
 ): Promise<boolean> => {
-  if (isExtension) {
+  if (isChromeExtension) {
     return await saveToExtensionStorage(key, data);
   }
 
@@ -72,7 +72,7 @@ export const saveToStorage = async <K extends StorageKeyValue>(
  * @param key 제거할 키 이름
  */
 export const removeFromStorage = async (key: StorageKeyValue): Promise<void> => {
-  if (isExtension) {
+  if (isChromeExtension) {
     return new Promise((resolve) => {
       chrome.storage.local.remove(key, () => resolve());
     });
