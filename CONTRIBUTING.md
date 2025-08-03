@@ -1,8 +1,8 @@
-# Delook 프로젝트 기여 가이드
+# Delook(디룩) 프로젝트 기여 가이드
 
-Delook 오픈소스 프로젝트에 관심을 가져주셔서 감사합니다.
+Delook(디룩) 오픈소스 프로젝트에 관심을 가져주셔서 감사합니다.
 
-이 문서는 Delook 프로젝트에 기여하는 방법과 절차를 안내하며, 원활한 협업을 위해 지켜야 할 규칙들을 정리했습니다.
+이 문서는 디룩에 기여하는 방법과 절차를 안내하며, 원활한 협업을 위해 지켜야 할 규칙들을 정리했습니다.
 
 기여 전에 아래 가이드라인을 읽고 따라 주시기 바랍니다.
 
@@ -15,6 +15,7 @@ Delook 오픈소스 프로젝트에 관심을 가져주셔서 감사합니다.
 - [문서 작성 가이드라인](#문서-작성-가이드라인)
 - [문서 작성 스타일 가이드라인](#문서-작성-스타일-가이드)
 - [템플릿 사용 안내](#템플릿-사용-안내)
+- [이미지 삽입 가이드](#이미지-삽입-가이드)
 
 ## 기여 방식 개요
 
@@ -191,4 +192,68 @@ dateModified: 최종 수정일 (YYYY.MM.DD)
 #### 예시
 
 - 예시는 ####(h4)로 구분합니다.
+```
+
+## 이미지 삽입 가이드
+
+MDX 문서에 이미지를 삽입하려면 아래 절차를 따르세요.
+
+### 1. 이미지 파일 추가
+
+이미지 파일을 아래 경로에 추가해주세요:
+
+- 경로: `public/docs-assets/${category}`
+- `${category}`는 문서 주제에 맞게 설정 (예: `javascript`)
+- 폴더가 없으면 직접 생성
+- **폴더명은 문서 카테고리와 일치해야 합니다.**
+
+> 예시:  
+> JavaScript 관련 문서인 경우 →  
+> `public/docs-assets/javascript/image.png`
+
+### 2. MDX 파일로 돌아가기
+
+이미지를 삽입할 `.mdx` 파일로 돌아갑니다.
+
+### 3. 이미지 컴포넌트 import
+
+`---` 메타태그 블록 아래에 다음 import 문을 추가합니다.
+
+```jsx
+import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
+```
+
+### 4. 이미지 컴포넌트 사용
+
+본문에 아래와 같이 <ImageContainer> 컴포넌트를 사용하세요.
+
+```tsx
+<ImageContainer category="카테고리명" fileName="파일명.png" alt="이미지 대체 텍스트" />
+```
+
+props 설명:
+
+| 속성       | 설명                                  |
+| ---------- | ------------------------------------- |
+| `category` | `public/docs-assets` 하위 폴더명      |
+| `fileName` | 이미지 파일명 (확장자 포함)           |
+| `alt`      | 이미지 대체 텍스트 (접근성 향상 목적) |
+
+### 5. 전체 예시 코드
+
+```mdx
+---
+title: 이미지 삽입 테스트
+type: concept
+language: Javascript
+tags:
+  - Javascript
+dateModified: 2025.00.00
+---
+
+import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
+
+# 이미지 삽입 예시
+
+<ImageContainer category="javascript" fileName="image.png" alt="이미지 대체 텍스트" />
 ```
