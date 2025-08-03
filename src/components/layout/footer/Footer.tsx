@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="flex flex-col gap-1 md:gap-0">
         {footerContents.infos.map((info) => (
           <ExternalLink
-            className="text-foreground/80 hover:text-primary hover:underline"
+            className="w-fit text-foreground/80 hover:text-primary hover:underline"
             href={info.href}
             key={info.text}
           >
@@ -19,24 +19,31 @@ export default function Footer() {
         ))}
       </div>
 
-      <ExternalLink
-        className="inline-block whitespace-pre-wrap font-normal text-primary/70 md:text-center"
-        href={footerContents.outLinks[1].href}
-      >
+      <p className="whitespace-pre-wrap text-xs font-extralight text-primary md:text-center">
         {footerContents.intro}
-      </ExternalLink>
+      </p>
 
-      <div className="flex flex-col gap-1 text-foreground/80 md:flex-row md:gap-3">
-        {footerContents.inLinks.map((info) => (
-          <Link className="hover:text-primary hover:underline" to={info.href} key={info.text}>
-            {info.text}
-          </Link>
-        ))}
-        {footerContents.outLinks.map((info) => (
-          <ExternalLink href={info.href} key={info.text}>
-            {info.text}
-          </ExternalLink>
-        ))}
+      <div>
+        <div className="flex flex-col gap-1 text-foreground/80 md:flex-row md:gap-3">
+          {footerContents.outLinks.map((info) => (
+            <ExternalLink
+              className="w-fit hover:text-primary hover:underline"
+              href={info.href}
+              key={info.text}
+            >
+              {info.text}
+            </ExternalLink>
+          ))}
+          {footerContents.inLinks.map((info) => (
+            <Link
+              className="w-fit hover:text-primary hover:underline"
+              to={info.href}
+              key={info.text}
+            >
+              {info.text}
+            </Link>
+          ))}
+        </div>
       </div>
     </footer>
   );
