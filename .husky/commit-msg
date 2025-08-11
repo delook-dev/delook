@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm use >/dev/null
 
 npx --no-install commitlint --edit "$1" || {
   echo "\n❌  커밋 메시지가 규칙을 따르지 않습니다! 🚨"
