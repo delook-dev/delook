@@ -5,6 +5,7 @@ export * from './Collapsible';
 export * from './ExternalLink';
 export * from './Form';
 export * from './IconButton';
+export * from './ImageContainer';
 export * from './Input';
 export * from './Label';
 export * from './Popover';

@@ -9,7 +9,7 @@ const footerContents = {
   outLinks: [
     { text: 'About', href: GITHUB_URL },
     { text: 'Contribute', href: CONTRIBUTE_SERVICE },
-    { text: 'Report Bugs', href: REPORT_BUGS },
+    { text: 'Report_Bugs', href: REPORT_BUGS },
   ],
   inLinks: [{ text: 'Privacy', href: ROUTES.PRIVACY }],
 };

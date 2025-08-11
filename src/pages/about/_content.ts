@@ -19,7 +19,6 @@ const contributeContents = `디룩은 함께 만들어가는
 오픈소스 프로젝트입니다.
 배운 내용을 공유하고,  
 더 많은 개발자들과 함께 성장해보세요! 
-작은 기여도 환영합니다.
 `;
 
 export { contributeContents, mainContents };
