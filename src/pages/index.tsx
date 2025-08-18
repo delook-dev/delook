@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { MetaTags } from '@/components';
+import { DevDevDev, MetaTags } from '@/components';
 import { ErrorPage } from '@/features/error';
 import { RenderPost, useFilterStore, usePostStore } from '@/features/post';
 
@@ -45,6 +45,7 @@ export default function Home() {
     <>
       <MetaTags title={'디룩 | 성장하는 개발자의 탭'} />
       <PostContent />
+      <DevDevDev />
     </>
   );
 }
