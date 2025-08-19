@@ -2,6 +2,7 @@ export * from './Badge';
 export * from './Button';
 export * from './Checkbox';
 export * from './Collapsible';
+export * from './DevDevDev';
 export * from './ExternalLink';
 export * from './Form';
 export * from './IconButton';

@@ -12,13 +12,16 @@ const mainContents = `바쁘다 바빠 현대사회,
 브라우저 탭만 열면 
 실무 & 면접에서 자주 쓰이는 개념을  
 자연스럽게 반복 학습할 수 있는  
-공간을 제공합니다! 
-`;
+공간을 제공합니다!`;
 
 const contributeContents = `디룩은 함께 만들어가는
 오픈소스 프로젝트입니다.
 배운 내용을 공유하고,  
-더 많은 개발자들과 함께 성장해보세요! 
-`;
+더 많은 개발자들과 함께 성장해보세요!`;
 
-export { contributeContents, mainContents };
+const crewContents = `현재 디룩의 콘텐츠를 채워줄
+1기 스터디원을 모집하고 있습니다!
+함께 공부&기록하며 성장하고 싶은 개발자분들의
+많은 참여 부탁드립니다!`;
+
+export { contributeContents, crewContents, mainContents };
