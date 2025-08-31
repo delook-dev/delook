@@ -25,7 +25,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --no-cache
 
       # manifest.json의 버전을 자동으로 업데이트 (build 번호만 증가)
       - name: Auto bump manifest version + version_name
