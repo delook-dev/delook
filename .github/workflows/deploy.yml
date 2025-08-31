@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
       - name: Checkout Git repository
@@ -26,7 +26,7 @@ jobs:
 
       # 패키지 설치
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       # 빌드
       - name: Yarn Build

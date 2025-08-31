@@ -4,7 +4,7 @@ import { MetaTags } from '@/components';
 import { Button, ExternalLink } from '@/components/ui';
 import { CHROME_STORE_URL, CONTRIBUTE_SERVICE, DOWNLOAD_INFO_README, SITE_URL } from '@/constants';
 
-import { contributeContents, crewContents, mainContents } from './_content';
+import { contributeContents, mainContents } from './_content';
 
 const isChrome = typeof window !== 'undefined' && /Chrome/.test(window.navigator.userAgent);
 
@@ -29,7 +29,7 @@ export default function AboutPage() {
               buttonHref={CONTRIBUTE_SERVICE}
               buttonClassName="bg-pink hover:bg-pink/90"
             />
-            <AboutSection
+            {/* <AboutSection
               srTitle="디룩 1기 스터디원 모집"
               contents={crewContents}
               buttonText="Apply Crew"
@@ -38,7 +38,7 @@ export default function AboutPage() {
               }
               buttonClassName="bg-green hover:bg-green/90 text-white"
               contentClassName="underline underline-offset-4 decoration-1 decoration-green inline bg-green/20 dark:bg-transparent px-1"
-            />
+            /> */}
           </div>
         </div>
       </div>
