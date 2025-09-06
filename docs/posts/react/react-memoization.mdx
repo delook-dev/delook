@@ -20,6 +20,8 @@ dateModified: 2025.09.02
 ## React에서의 메모이제이션
 React에서는 렌더링 성능 최적화를 위해 크게 세 가지 기법을 제공합니다.
 
+
+
 ### 1. React.memo
 **컴포넌트 전체**를 메모이제이션하여 props가 변경되지 않으면 리렌더링을 건너뜁니다.
 - **주요 목적**: 컴포넌트의 **불필요한 리렌더링**을 방지하여 전체적인 렌더링 성능을 개선합니다.
@@ -33,6 +35,11 @@ const PetList = React.memo(({ data, type, age }) => {
   );
 });
 ```
+
+#### 언제 사용하면 좋을까?
+- 리스트 아이템처럼 렌더링 비용이 큰 컴포넌트가 있을 때
+- 부모에서 매번 같은 props를 내려보내는데, 불필요하게 리렌더링되는 경우
+- 배열/객체 props가 자주 새로 생성되는 경우에는 equal 함수(커스텀 비교)도 고려 가능
 
 
 ### 2. useMemo
@@ -54,6 +61,10 @@ function SearchPage({ data, page }) {
   return <PetList data={paginatedData} />;
 }
 ```
+
+#### 언제 사용하면 좋을까?
+- 데이터 필터링, 정렬, 페이지네이션처럼 계산 비용이 큰 연산이 반복될 때
+- 매 렌더마다 새 배열/객체가 만들어져서 하위 컴포넌트가 불필요하게 리렌더링될 때
 
 
 ### 3. useCallback
@@ -83,6 +94,16 @@ function ParentComponent({ items }) {
 }
 ```
 
+#### 언제 사용하면 좋을까?
+- 콜백 함수를 props로 넘기는 경우 (```onClick```, ```onChange``` 등)
+- 자식 컴포넌트가 React.memo로 감싸져 있어서 함수 참조가 바뀌면 불필요하게 리렌더링되는 경우
+
+
+## 정리
+- **React.memo**: 렌더링 비용이 큰 컴포넌트, 동일한 props로 자주 호출될 때 사용
+- **useMemo**: 계산 비용이 큰 연산(필터링, 정렬, 페이지네이션 등)에 사용
+- **useCallback**: 콜백을 자식에게 내려주는데, 참조 변경으로 불필요한 리렌더링이 생길 때
+
 ### 사용 시 주의사항
 1. **과도한 사용 금지**: 모든 값을 메모이제이션하면 오히려 **메모리 사용량**이 증가할 수 있습니다.
 ```typescript
@@ -106,3 +127,4 @@ const result = useMemo(() => {
 
 ### 참고자료
 [리액트 렌더링 성능 최적화에 대한 고민](https://hoonlog.vercel.app/react-optimize)
+[Web: 최적화와 React.memo, useMemo 알아보기](https://medium.com/hcleedev/web-%EC%B5%9C%EC%A0%81%ED%99%94%EC%99%80-react-memo-usememo-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-4324a237a039)
