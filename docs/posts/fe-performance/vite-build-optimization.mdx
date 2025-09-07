@@ -1,7 +1,7 @@
 ---
 title: 'vitejs/rolldown-vite와 manualChunk(advancedChunk) 옵션을 활용한 빌드 최적화'
 type: 'concept'
-language: 'performance'
+language: 'fe-performance'
 tags:
   - vite
   - vitejs/rolldown-vite
@@ -9,6 +9,14 @@ tags:
   - build optimization
 dateModified: 2025.09.07
 ---
+
+# 프론트엔드 빌드 최적화
+
+- webpack, rollup 등과 같은 javascript 기반의 번들러 대신, go / rust 기반의 번들러를 사용하면 빌드 속도 개선에 많은 도움이 됩니다.
+- 빌드 시, chunk를 분리하면 빌드 결과물을 작은 사이즈의 여러 js 번들로 쪼갤 수 있기 때문에 네트워크 전송 비용을 줄이고 모듈 다운로드 속도를 더 빠르게 할 수 있습니다.
+  - dynamic import 활용 (lazy loading)
+  - (vite) rollupOptions manualChunk 옵션 활용
+
 
 {/* 📌 개념 설명 문서 */}
 
@@ -97,8 +105,6 @@ export default {
 
 ---
 ### 추가 학습을 위한 링크
-- rolldown을 적용하면서 플러그인 라이브러리들 내부에 '~Oxc' 라고 선언된 변수, 함수들을 심심치 않게 확인할 수 있었습니다. 
-- [oxc github](https://github.com/oxc-project/oxc)
+- [oxc github](https://github.com/oxc-project/oxc) - rolldown을 적용하면서 플러그인 라이브러리들 내부에 '~Oxc' 라고 선언된 변수, 함수들을 심심치 않게 확인할 수 있었습니다. 
 
-- 위에서 언급한 hook filter에 관한 rollup 공식문서를 참고하면 좋습니다. :)
-- [hook filter](https://rolldown.rs/plugins/hook-filters)
+- [hook filter](https://rolldown.rs/plugins/hook-filters) - 위에서 언급한 hook filter에 관한 rollup 공식문서를 참고하면 좋습니다.
