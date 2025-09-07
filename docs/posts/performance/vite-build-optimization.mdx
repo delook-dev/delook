@@ -1,0 +1,104 @@
+---
+title: 'vitejs/rolldown-vite와 manualChunk(advancedChunk) 옵션을 활용한 빌드 최적화'
+type: 'concept'
+language: 'performance'
+tags:
+  - vite
+  - vitejs/rolldown-vite
+  - manualChunk
+  - build optimization
+dateModified: 2025.09.07
+---
+
+{/* 📌 개념 설명 문서 */}
+
+# Rolldown 
+
+- Rolldown은 Rust로 구현된 고성능 JavaScript 번들러로, Rollup을 대체하면서 동일한 API와 플러그인 호환성을 유지합니다.
+-	Vite는 현재 esbuild(의존성 프리번들링)와 Rollup(프로덕션 빌드)을 함께 사용하지만, Rolldown은 이를 하나로 통합한 단일 번들러로 복잡성을 줄이고 성능을 개선하는 것을 목표로 합니다.
+-	Rust 기반 구현 덕분에 Rollup 대비 압도적인 성능 향상을 제공하며, 초기 테스트에서 빌드 속도 및 메모리 사용에서 유의미한 이득이 확인되었습니다.
+-	기존 Rollup 및 Vite 생태계와 플러그인 호환성 유지, manualChunks의 대체 옵션인 advancedChunks, HMR, Module Federation 등의 추가 최적화 기능을 포함하고 있습니다.
+-	현재는 rolldown-vite라는 별도 패키지로 제공되며, Vite의 드롭인(drop-in) 대체재로 쉽게 사용해볼 수 있고, 향후 정식 Vite 내부로 통합될 예정입니다.
+
+# manualChunk
+
+- manualChunk는 프로덕션 빌드 시에 결과물을 여러 개의 js 빌드 결과물로 분리할 수 있도록 하는 rollup option입니다.
+- chunk 분리를 하지 않으면 기본적으로 번들러는 모든 코드를 하나의 index.js에 번들링하게 됩니다.
+- 이렇게 되면 하나의 js 번들 사이즈가 커지게 되고 네트워크 비용이 증가합니다.
+- 하나의 파일 사이즈가 약 10MB가 넘어가는 경우, cloudFront와 같은 cdn 서비스에서 적용하는 파일 압축도 적용되지 않아 파일 전송 비용도 증가할 수 있습니다.
+
+- manualChunk 옵션을 사용하면 package.json에 명시된 의존하고 있는 외부 라이브러리뿐만 아니라, 내부 서비스 모듈도 하나의 이름으로 묶어서 하나의 `${name}.js` 파일로 번들링할 수 있습니다.
+
+```js
+export default {
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (/\/react(?:-dom)?/.test(id)) {
+            return 'vendor'
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+{/* 여기에 내용을 작성해주세요. 코드 예시, 설명, 더보기 등을 포함할 수 있습니다. */}
+
+### vite에서 rolldown-vite로 마이그레이션하기
+```js
+// package.json
+{
+  "dependencies": {
+    "vite": "npm:rolldown-vite@latest" // 기존, "vite": "^7.0.0"
+  }
+}
+```
+
+### 의존하는 플러그인이 hook filter를 지원하지 않는다면 withFilter Wrapper 함수를 활용해야 합니다.
+
+- hook filter란 rust / js 간 오버헤드를 줄이기 위한 함수로서, 모든 모듈을 rust에서 호출하지 않고 필요한 모듈만 호출할 수 있도록 하는 사전 filtering 기능입니다. 
+
+```js
+import { withFilter, defineConfig } from 'vite'
+import svgr from 'vite-plugin-svgr'
+
+export default defineConfig({
+  plugins: [
+    // Load the `svgr` plugin only for files which end in `.svg?react`
+    withFilter(
+      svgr({
+        /*...*/
+      }),
+      { load: { id: /\.svg\?react$/ } },
+    ),
+  ],
+})
+```
+
+### rolldown 사용 시에는 manualChunk 대신 advancedChunk를 사용해야 합니다.
+
+```js
+// New configuration (Rolldown)
+export default {
+  build: {
+    rollupOptions: {
+      output: {
+        advancedChunks: {
+          groups: [{ name: 'vendor', test: /\/react(?:-dom)?/ }]
+        }
+      }
+    }
+  }
+}
+```
+
+---
+### 추가 학습을 위한 링크
+- rolldown을 적용하면서 플러그인 라이브러리들 내부에 '~Oxc' 라고 선언된 변수, 함수들을 심심치 않게 확인할 수 있었습니다. 
+- [oxc github](https://github.com/oxc-project/oxc)
+
+- 위에서 언급한 hook filter에 관한 rollup 공식문서를 참고하면 좋습니다. :)
+- [hook filter](https://rolldown.rs/plugins/hook-filters)
