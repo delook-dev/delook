@@ -28,26 +28,33 @@
 - **Styling**: Tailwind CSS, shadcn/ui
 - **Platform**: Chrome Extension, Web
 - **Infra / Deployment**: AWS S3, CloudFront
+- **Version Manager** : volta
+
+## 개발 환경 설정
+
+이 프로젝트는 **volta**와 **yarn**을 사용합니다.
+
+volta를 통해 Node.js와 Yarn 버전을 고정하여, 모든 개발자가 동일한 환경에서 작업할 수 있도록 합니다.
+
+1. volta 가 설치되지 않았다면 설치해주세요. ([참고](https://docs.volta.sh/guide/getting-started))
+
+2. 패키지 설치
+
+   ```bash
+   yarn install
+   ```
+
+3. 개발 서버 실행
+
+   ```bash
+   yarn dev
+   ```
 
 ## 배포 플로우
 
 - `main` 브랜치에 병합 후 `production` 브랜치를 통해 배포가 진행됩니다.
 - 웹사이트와 크롬 스토어 배포가 동시에 이루어지며, 크롬 스토어의 경우 심사 기간(약 2일)으로 인해 배포 시점에 차이가 있을 수 있습니다.
 
-## 설치 및 사용법
-
-설치 및 사용법은
-<a href="https://github.com/delook-dev#%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%82%AC%EC%9A%A9%EB%B2%95" target="_blank">
-<strong> 여기</strong></a>에서 확인해주세요.
-
-## 기여
-
-디룩은 함께 만들어가는 오픈소스 프로젝트입니다.
-다음과 같은 기여를 받고 있습니다
-
-- 콘텐츠 기여
-- 버그 리포트 및 개선
-
-자세한 기여 방법은 [CONTRIBUTING.md](https://github.com/delook-dev/delook/blob/main/CONTRIBUTING.md)와 [CODE_OF_CONDUCT.md](https://github.com/delook-dev/delook/blob/main/CODE_OF_CONDUCT.md)를 참고해주세요.
+---
 
 기능 제안이나 UI 개선은 [Issues](https://github.com/delook-dev/delook/issues) 또는 [Discussions](https://github.com/delook-dev/delook/discussions)을 통해 남겨주시면 관리자가 검토 후 작업하도록 하겠습니다.

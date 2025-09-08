@@ -107,5 +107,9 @@
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
+  },
+  "volta": {
+    "node": "22.19.0",
+    "yarn": "4.9.4"
   }
 }

@@ -1,0 +1,49 @@
+---
+title: JAVA의 final 키워드
+type: 'concept'
+language: Java
+tags:
+  - Java
+dateModified: 2025.09.06
+---
+
+# JAVA의 final 키워드
+
+JAVA에서의 final 키워드는 어디에서 쓰느냐에 따라서 의미가 달라집니다.
+이 문서에서는 변수, 메서드, 클래스의 final 키워드에 대해 학습합니다.
+
+## final 변수
+- 변수에 final 키워드가 붙으면 그 변수는 초기화 후 재할당이 불가능합니다.
+- 원시타입인 경우, 값 자체를 변경할 수 없습니다.
+- 참조타입인 경우, 참조하는 대상을 바꿀 수 없습니다. 참조하는 객체의 내부 상태는 바꿀 수 있습니다.
+```
+final List<String> list = new ArrayList<>();
+list.add("apple");   // 가능! (리스트의 상태를 변경)
+list.add("banana");  // 가능!
+
+list = new ArrayList<>(); // 불가능! (참조 자체 변경 불가)
+```
+
+-blank final: 선언될 때 초기화되지 않은 final 변수를 말합니다. 즉, 빈 final 변수이며 어디서든 한 번은 초기화되어야 합니다.
+```
+class Example {
+    final int x; // blank final (지금은 값이 없음)
+    Example(int value) {
+        x = value; // 생성자에서 반드시 한 번 초기화
+    }
+}
+```
+## final 메서드
+- 오버라이딩 금지: final 메서드는 하위 메서드에서 재정의할 수 없습니다.
+- private 메서드는 원래 상속/오버라이드의 대상이 아니므로 사실상 final 메서드와 유사합니다.
+  
+## final 클래스
+- 상속 금지: 더 이상 확장이 불가능합니다. String, Integer, LocalDateTime 클래스 등이 모두 final 클래스에 속합니다.
+- 클래스가 final이면, 그 안의 모든 인스턴스 메서드는 final입니다.
+- 라이브러리 설계 시, 불변/보안/불변계약 유지를 위해 final 클래스를 사용합니다.
+
+## 주의할 점
+- final은 항상 불변은 아니다: final은 참조 재할당 금지일 뿐, 객체 상태의 불변은 별도의 설계가 필요합니다.
+- 매개변수에 final을 사용: 메서드 내부에서 그 파라미터 변수에 재할당을 못 하게 하는 용도로 사용합니다.
+- enum/record: enum은 상속이 불가하므로 사실상 final 클래스입니다. record 는 클래스 자체가 final입니다.
+
