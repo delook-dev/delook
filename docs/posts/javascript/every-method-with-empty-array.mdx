@@ -1,0 +1,143 @@
+---
+title: every, some 메서드 잘 사용하기
+type: 'concept'
+language: JavaScript
+tags:
+  - Javascript
+dateModified: 2025.09.02
+---
+
+# every, some 메서드 잘 사용하기
+
+## 메서드 소개
+
+#### every
+
+- every 메서드는 콜백 함수를 통해 배열의 요소들이 조건을 만족하는지를 판별합니다.
+- 모든 배열 요소가 참을 반환하면 true, 그렇지 않으면 false를 반환합니다.
+
+```js
+const isBelowThreshold = (currentValue) => currentValue < 40;
+
+const array1 = [1, 30, 39, 29, 10, 13];
+const array2 = [34, 50, 24, 10, 17, 77];
+
+console.log(array1.every(isBelowThreshold)); // true
+console.log(array2.every(isBelowThreshold)); // false
+```
+
+#### some
+
+- some 메서드는 배열의 요소 중 하나라도 콜백 함수의 조건을 통과하는지를 판별합니다.
+
+```js
+function isBiggerThan10(element, index, array) {
+  return element > 10;
+}
+
+[2, 5, 8, 1, 4].some(isBiggerThan10); // false
+[12, 5, 8, 1, 4].some(isBiggerThan10); // true
+```
+
+## 빈 배열에서 every, some 메서드의 동작
+
+빈 배열을 대상으로 every 메서드를 실행하면 true를 반환합니다.
+
+```js
+const array3 = [];
+
+console.log(array3.every(isBelowThreshold)); // true
+```
+
+반면에, 빈 배열을 대상으로 some 메서드를 실행하면 false를 반환합니다.
+
+```js
+const array = [];
+
+console.log(array.some(isBiggerThan10)); // false
+```
+
+이러한 결과값을 리턴하는 이유를 논리학에서 찾아볼 수 있습니다.
+
+## 두 메서드의 논리학적 배경
+
+| 메서드 | 빈 배열 결과 | 논리학 개념       | 핵심 이해                            |
+| ------ | ------------ | ----------------- | ------------------------------------ |
+| every  | true         | 공허참 (전칭양화) | "반례가 존재하지 않는가?"            |
+| some   | false        | 존재양화          | "조건을 만족하는 요소가 존재하는가?" |
+
+#### every
+
+every 메서드는 논리학의 전칭양화(Universal Quantification) 개념을 반영하고 있습니다.
+
+#### 전칭양화 예시
+
+- 이 빈 상자의 모든 공은 파란색이다.
+  = 만약 x가 이 상자 안의 공이라면, x는 파란색이다.
+
+- 이 배열 안의 모든 요소가 조건을 만족한다.
+  = 만약 x가 배열 안의 요소라면, x는 조건을 만족한다.
+
+#### 거짓된 전제
+
+- 상자가 비어있다.
+- 배열이 비어있다.
+
+위 논리 구조에서 'x가 상자 안의 공이다' 라는 전제는 거짓입니다.
+
+전칭양화문에서 거짓인 전제로부터는 어떤 결론도 참이 되며, 이를 '공허참'이라고 합니다.
+
+#### some
+
+some 메서드는 '존재양화(existential quantification)' 개념을 반영하고 있습니다.
+
+#### 존재양화 예시
+
+- 어떤 공은 파란색이다.
+  = 어떤 공이 존재하며, 그 공은 파란색이다.
+
+- 이 배열 안의 어떤 요소는 조건을 만족한다.
+  = 배열 안에 조건을 만족하는 x가 존재한다.
+
+#### 거짓된 전제
+
+- 공이 존재하지 않는다.
+- 배열이 비어있다.
+
+위 논리 구조에서는 '어떤 공이 존재한다' 라는 전제는 거짓입니다.
+
+존재양화에서는 해당 조건을 만족하는 원소가 실제로 존재할 때만 참이 됩니다.
+
+빈 배열에서는 요소가 존재하지 않으므로 false를 반환합니다.
+
+## every, some 메서드를 사용할 때는
+
+#### every
+
+- every를 '배열의 모든 요소가 조건을 만족하는가?'로 이해하기 보다는,
+  '배열에 조건을 만족하지 않는 요소가 없는가?'로 이해해야 합니다.
+
+```js
+const foo = (arr) => {
+	if (arr.length === 0) {
+		throw new Error('this method requires at least one element');
+	}
+	if (arr.every(...)) {
+		...
+	}
+}
+```
+
+#### some
+
+- some을 '배열에 조건을 만족하는 요소가 하나라도 있는가?'로 이해해야 합니다.
+
+```js
+const hasValidElement = (arr, condition) => {
+  if (arr.length === 0) {
+    // 빈 배열에 대한 명시적 처리
+    return false; // 또는 원하는 기본값
+  }
+  return arr.some(condition);
+};
+```
