@@ -12,7 +12,7 @@ dateModified: 2025.09.10
 
 ### setTimeout을 사용한 잘못된 패턴
 
-setTimeout(..., 0)을 사용해 플래그를 즉시 해제하려 했지만, 실제로는 이벤트 루프의 다음 사이클에서 실행되므로 의도대로 동작하지 않습니다.
+아래는 중복 실행을 방지하기 위해 setTimeout을 사용한 예시 코드입니다.
 
 ```js
 let isProcessing = false;
