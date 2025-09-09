@@ -1,0 +1,169 @@
+---
+title: setTimeout이 정확한 시간을 보장하지 않는 이유
+type: 'concept'
+language: JavaScript
+tags:
+  - Javascript
+  - EventLoop
+dateModified: 2025.09.10
+---
+
+# setTimeout이 정확한 시간을 보장하지 않는 이유
+
+### setTimeout을 사용한 잘못된 패턴
+
+setTimeout(..., 0)을 사용해 플래그를 즉시 해제하려 했지만, 실제로는 이벤트 루프의 다음 사이클에서 실행되므로 의도대로 동작하지 않습니다.
+
+```js
+let isProcessing = false;
+
+function handleClick() {
+  if (isProcessing) return;
+
+  isProcessing = true;
+
+  setTimeout(() => {
+    isProcessing = false;
+  }, 0);
+
+  processData();
+}
+```
+
+그러나 setTimeout은 콜백이 언제 실행될 지 보장하지 않습니다.
+
+다른 동기 코드가 실행 중이라면 플래그 해제가 지연되며, 기기 성능에 따라서도 동작이 달라질 수 있습니다.
+
+### setTimeout이 동작하는 방식
+
+#### 이벤트 루프와 태스크 큐
+
+자바스크립트 이벤트 루프는 다음 작업을 반복합니다.
+
+1. 호출 스택에 실행 중인 코드가 있는지 확인합니다.
+2. 호출 스택이 비어있으면 태스크 큐에서 대기중인 작업을 확인합니다.
+3. 태스크 큐에 작업이 있다면 가장 오래된 것부터 호출 스택으로 이동합니다.
+
+2번을 통해 알 수 있는 것은, '호출 스택이 비어있을 때' 태스크 큐의 작업이 실행된다는 것입니다.
+
+#### 동기/비동기 작업의 실행 시점
+
+자바스크립트에서 코드의 실행 시점은 동기/비동기에 따라 다릅니다.
+
+- 동기 작업 : 즉시 실행
+- 비동기 작업 : 태스크 큐에서 대기 → 호출 스택이 비었을 때만 실행
+
+#### setTimeout
+
+setTimeout은 동기적으로 실행되지만, setTimeout에 넘겨진 콜백은 비동기적으로 실행됩니다.
+
+즉, setTimeout이 흐름에 따라 실행되면서 콜백이 태스크 큐에 추가되지만,
+
+이 태스크 큐에 추가된 콜백은 당장 실행되지 않고 호출 스택이 빌 때까지 대기하게 됩니다.
+
+```js
+// setTimeout이 하는 일:
+setTimeout(callback, 100);
+
+// 1. 브라우저 Web API에게 "100ms 후에 callback을 태스크 큐에 넣어줘" 요청
+// 2. 즉시 다음 코드로 넘어감 (콜백은 실행하지 않음)
+```
+
+#### 예시 1 : 의도한 시간 이상 지연
+
+아래 예시에서는 heavyTask가 2초 동안 호출 스택을 점유합니다.
+
+그러므로 heavyTask의 실행이 끝난 뒤인 2초 뒤에 비로소 setTimeout의 콜백이 실행됩니다.
+
+실행 순서는 아래와 같습니다.
+
+1. console.log('시작') - 즉시 실행되어 "시작" 출력
+2. heavyTask() 함수 정의 - 함수만 정의, 아직 실행 안됨
+3. setTimeout(...) - Web API에 타이머 등록만 하고 바로 다음 줄로 넘어감 (콜백은 실행하지 않음)
+4. heavyTask() 호출 - 2초 동안 호출 스택을 점유하며 실행
+5. console.log('끝') - heavyTask 완료 후 "끝" 출력
+6. setTimeout 콜백 실행 - 호출 스택이 비워진 후에야 "100ms 후 실행되어야 할 작업" 출력
+
+```js
+console.log('시작');
+
+// 긴 동기 작업 시뮬레이션
+function heavyTask() {
+  const start = Date.now();
+  while (Date.now() - start < 2000) {
+    // 2초 동안 CPU 집약적 작업
+  }
+}
+
+setTimeout(() => {
+  console.log('100ms 후 실행되어야 할 작업');
+}, 100);
+
+heavyTask(); // 2초 동안 호출 스택을 점유
+
+console.log('끝');
+
+// 실제로는 2초 후에 setTimeout 콜백이 실행됨
+```
+
+#### 예시 2 : 즉시 실행이 적용되지 않음
+
+아래 예시를 통해서 setTimeout(..., 0)이어도 동기 코드가 먼저 실행됨을 알 수 있습니다.
+
+```js
+console.log('1. 시작');
+
+setTimeout(() => console.log('3. 즉시 실행되어야 할 콜백'), 0);
+
+console.log('2. 동기 코드');
+
+// 결과:
+// 1. 시작
+// 2. 동기 코드
+// 3. 즉시 실행되어야 할 콜백
+```
+
+#### setTimeout 지연시간의 실제 의미
+
+setTimeout의 두번째 인자로 넘기는 지연시간은 다음과 같은 의미를 갖습니다.
+
+- 호출 스택이 비어있고, 다른 작업에 지연이 없다면 지정한 시간 뒤에 실행됩니다.
+
+```js
+console.log('시작', Date.now());
+
+setTimeout(() => {
+  console.log('1초 후', Date.now());
+}, 1000);
+
+setTimeout(() => {
+  console.log('2초 후', Date.now());
+}, 2000);
+
+// 결과: 1초 후가 먼저, 2초 후가 나중에 실행됨
+```
+
+- 여러 setTimeout 간의 상대적 순서를 보장합니다. (이는 호출 스택이 점유 되어 있더라도 보장됩니다.)
+
+```js
+setTimeout(() => console.log('A: 100ms'), 100);
+setTimeout(() => console.log('B: 50ms'), 50);
+setTimeout(() => console.log('C: 200ms'), 200);
+
+// 실행 결과:
+// B: 50ms
+// A: 100ms
+// C: 200ms
+```
+
+### 정리
+
+- setTimeout은 정확한 실행 시점을 보장하지 않으므로 정확한 타이밍이 중요한 작업에 사용하지 않아야 합니다.
+- 호출 스택이 비어있어야만 태스크 큐의 작업이 실행됩니다.
+- 중복 실행을 방지할 때는 throttle, debounce를 사용할 수 있습니다.
+- 이벤트 루프의 동작 원리를 이해하면 비동기 코드의 실행 순서를 예측할 수 있습니다.
+
+### 참고
+
+- 이벤트 루프의 작동을 시각적으로 확인하고자 할 때 : [Javascript Visualizer](http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D)
+- 브라우저 개발자 도구의 Performance 탭에서 실행 순서를 분석할 수 있습니다.
