@@ -1,0 +1,59 @@
+---
+title: 'TCP 통신 방법 : 3-way & 4-way Handshake'
+type: 'concept'
+language: 'Network'
+tags:
+  - TCP
+  - Protocol
+dateModified: 2025.09.05
+---
+import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
+
+# 3-way & 4-way Handshake
+
+TCP는 데이터를 주고받기 전에 연결(Connection)을 초기화하고, 통신이 끝난 후에는 연결을 종료하는 과정을 통해 신뢰성을 높입니다.
+
+
+연결 초기화 시 진행하는 과정은 **3-way handshake**,
+연결을 종료하기 위해 진행하는 과정은 **4-way handshake** 입니다.
+
+---
+
+## 3-way handshake (연결 초기화)
+
+클라이언트와 서버가 서로 연결하기 위해서 아래 3단계를 거칩니다.
+
+<ImageContainer category="network" fileName="3way.png" alt="TCP 3-way handshake" />
+
+_연결 요청의 주체는 클라이언트 입니다._
+
+1. **SYN** (클라이언트 → 서버)
+   - 클라이언트가 서버에 `연결 요청(SYN)`을 보냅니다.
+2. **SYN + ACK** (서버 → 클라이언트)
+   - 서버가 `요청을 받았다는 것에 응답(ACK)`하고, 클라이언트에게 `연결 요청(SYN)`을 합니다.
+3. **ACK** (클라이언트 → 서버)
+   - 클라이언트가 서버의 `연결 요청을 받았음에 대한 응답(ACK)`을 합니다.
+
+> #### 클라이언트와 서버가 **서로 응답을 받을 수 있는 상태임을 확인**하고, 연결에 성공합니다.
+---
+
+## 4-way handshake (연결 종료)
+
+TCP 연결을 종료할 때는 아래 4단계를 거칩니다.
+
+<ImageContainer category="network" fileName="4way.png" alt="TCP 4-way handshake" />
+
+_연결 종료는 서버가 먼저 할 수도, 클라이언트가 먼저 할 수도 있습니다. 또한, <u>연결의 종료방식은 상황에 따라 달라질 수 있습니다. (e.g. 타임아웃)</u>_
+
+1. **FIN** (클라이언트 → 서버)
+   - 클라이언트가 `연결 종료 요청(FIN)`을 보냅니다.
+2. **ACK** (서버 → 클라이언트)
+   - 서버가 `종료 요청을 확인(ACK)`합니다.
+3. **FIN** (서버 → 클라이언트)
+   - 이제, 서버도 `연결 종료 요청(FIN)`을 보냅니다.
+4. **ACK** (클라이언트 → 서버)
+   - 클라이언트가 `종료 요청을 확인(ACK)`합니다.
+
+> #### 클라이언트와 서버가 **각각 독립적으로 종료를 수행**하여, 데이터가 유실되지 않도록 안전하게 연결을 종료합니다.
+
+---
