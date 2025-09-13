@@ -20,7 +20,7 @@ Node.js에서 메모리 누수는 전역 변수, 클로저, 이벤트 리스너,
 
 - **Heap**
   - 배열, 객체, 함수 같은 **참조형 값** 저장
-  - **GC(Garbage Collector)**가 주기적으로 관리  
+  - **GC(Garbage Collector)** 가 주기적으로 관리  
 
 - **Generations**
   - **Young Generation** (Nursery → Intermediate)  
@@ -74,11 +74,11 @@ Node.js에서 메모리 누수는 전역 변수, 클로저, 이벤트 리스너,
 
 - **객체 참조 해제**  
   - 더 이상 필요 없는 경우 GC 대상이 되도록 참조 제거  
-    ```js
+  ```js
     myArray = [];
     myMap.clear();
     obj = null;
-    ```
+  ```
 
 - **이벤트 리스너 정리**  
   ```js
@@ -87,4 +87,4 @@ Node.js에서 메모리 누수는 전역 변수, 클로저, 이벤트 리스너,
 
   // 더 이상 필요 없을 때
   element.removeEventListener('click', handler);
- ```
+  ```
