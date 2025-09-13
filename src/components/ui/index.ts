@@ -10,6 +10,7 @@ export * from './ImageContainer';
 export * from './Input';
 export * from './Label';
 export * from './Popover';
+export * from './Resizable';
 export * from './Sheet';
 export * from './Sidebar';
 export * from './SidebarCollapsibleMenu';
