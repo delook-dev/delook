@@ -1,0 +1,90 @@
+---
+title: 'Node.js 메모리 누수'
+type: 'concept'
+language: 'fe-performance'
+tags:
+  - memory-leak
+  - node.js
+  - performance
+dateModified: 2025.09.13
+---
+
+# Node.js 메모리 구조와 메모리 누수
+
+Node.js에서 메모리 누수는 전역 변수, 클로저, 이벤트 리스너, 캐시 관리 부실 등으로 발생하므로 불필요한 참조를 해제하고 주기적으로 모니터링이 필요합니다.
+
+## 메모리 구조와 GC
+- **Stack**
+  - 숫자, 문자열, boolean 등 **primitive 값**과 함수 호출 정보 저장
+  - 함수 호출 종료 시 즉시 해제됨  
+
+- **Heap**
+  - 배열, 객체, 함수 같은 **참조형 값** 저장
+  - **GC(Garbage Collector)**가 주기적으로 관리  
+
+- **Generations**
+  - **Young Generation** (Nursery → Intermediate)  
+    → 대부분 짧게 쓰이고 바로 GC로 제거됨  
+  - **Old Generation**  
+    → Young에서 여러 번 살아남은 객체들이 이동  
+    → 크고 오래된 객체는 여기서 문제 발생 가능  
+
+- **GC 방식**
+  - **Scavenge (Minor GC)**: 빠르지만 부분적 → Young 대상  
+  - **Mark-Sweep-Compact (Major GC)**: 느리지만 정확 → Old 대상  
+
+---
+
+## 메모리 누수 주요 원인
+1. **전역 변수**  
+   - 항상 Root에서 도달 가능 → 해제되지 않음  
+   - `window`, `global`에 의도치 않게 데이터 붙여둔 경우 특히 문제  
+
+2. **클로저 남용**  
+   - 함수 종료 후에도 내부 변수가 참조되어 해제 불가  
+   - 이벤트 핸들러 안에서 불필요하게 외부 상태를 잡아두는 경우  
+
+3. **이벤트 리스너 미해제**  
+   - `addEventListener` / `on`으로 등록하고 해제하지 않으면 참조 유지  
+
+4. **캐시 관리 부실**  
+   - LRU 캐시, `Map` / `Set` 등에 데이터를 넣고 해제 안 하는 경우  
+
+5. **다중 참조**  
+   - 객체가 여러 곳에서 참조되면 GC 불가  
+   - 예: 전역 배열에 계속 `push`만 하고 `clear`하지 않는 경우  
+
+---
+
+## 메모리 제한 관리
+- 힙 크기 조정  
+  ```bash
+  node --max-old-space-size=4096 app.js
+  ```
+  
+---
+## 코드 레벨 예방책
+
+- **전역 변수 줄이기**  
+  - 모듈 스코프 사용  
+  - 필요 없으면 `delete` 혹은 `null` 처리  
+
+- **클로저 최적화**  
+  - 불필요하게 외부 변수를 캡처하지 않기  
+
+- **객체 참조 해제**  
+  - 더 이상 필요 없는 경우 GC 대상이 되도록 참조 제거  
+    ```js
+    myArray = [];
+    myMap.clear();
+    obj = null;
+    ```
+
+- **이벤트 리스너 정리**  
+  ```js
+  const handler = () => {};
+  element.addEventListener('click', handler);
+
+  // 더 이상 필요 없을 때
+  element.removeEventListener('click', handler);
+ ```
