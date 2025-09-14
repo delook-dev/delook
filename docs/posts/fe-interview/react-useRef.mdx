@@ -1,0 +1,90 @@
+---
+title: 'useRef는 언제 사용하나요?'
+type: 'interview'
+language: 'React'
+tags:
+  - React
+  - Hooks
+dateModified: 2025.09.14
+---
+
+## 답변
+
+useRef는 렌더링 결과에 영향을 주지 않으면서도 컴포넌트 생애주기 동안 특정 값을 지속적으로 참조(reference)할 수 있게 해 주는 Hook입니다.
+
+주로 사용되는 상황은 다음과 같습니다:
+
+1. DOM을 조작할 때
+2. 값을 유지하면서도 컴포넌트의 불필요한 렌더링을 방지하고 싶을 떄
+
+## Q. useRef를 사용하는 상황을 구체적으로 알려주세요.
+
+#### 1. DOM을 조작할 때
+
+특정 DOM 노드에 접근하기 위해 useRef를 사용해 해당 노드에 대한 참조를 얻을 수 있습니다. 이 참조를 통해 `input` 요소에 포커스를 주거나, 비디오를 재생하는 등 명령형 방식으로 DOM을 조작하는 데 활용할 수 있습니다.
+
+텍스트 입력에 포커스 이동하기 예시:
+
+```jsx
+import { useRef } from 'react';
+
+export default function Form() {
+  const inputRef = useRef(null);
+
+  function handleClick() {
+    inputRef.current.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleClick}>Focus the input</button>
+    </>
+  );
+}
+```
+
+#### 2. 값을 유지하면서도 컴포넌트의 불필요한 렌더링을 방지하고 싶을 떄
+
+컴포넌트가 리렌더링될 때 값이 초기화되지 않고 계속 유지되어야 하지만, 그 값이 변경된다고 해서 컴포넌트가 다시 렌더링될 필요가 없는 경우에 사용합니다. `useState`와 달리 `useRef`는 `current` 값이 변경되어도 리렌더링을 유발하지 않아 성능 최적화에 도움이 될 수 있습니다.
+
+리렌더링 없이 값을 추적해야 할 때:
+
+```jsx
+import { useState, useRef, useEffect } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const prevCountRef = useRef();
+
+  useEffect(() => {
+    prevCountRef.current = count;
+  }, [count]);
+
+  const previousCount = prevCountRef.current;
+
+  const handleCounter = () => {
+    setCount(count + 1);
+  };
+
+  return (
+    <div>
+      <p>현재 카운트: {count}</p>
+      <p>이전 카운트: {previousCount === undefined ? '없음' : previousCount}</p>
+      <button onClick={handleCounter}>증가</button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+## Q. 브라우저 API란 무엇인가요?
+
+웹 브라우저가 웹 애플리케이션 개발자에게 제공하는 내장 기능 및 도구들을 의미합니다. 쉽게 말해, 웹 페이지와 상호작용하거나 브라우저 환경에서 특정 기능을 수행하기 위해 만들어져 제공되는 JavaScript 함수와 객체들의 집합이라고 할 수 있습니다.
+
+브라우저 API 사용 예시:
+
+```js
+myRef.current.scrollIntoView();
+```
