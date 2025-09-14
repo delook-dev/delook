@@ -1,0 +1,65 @@
+---
+title: 'useRouter와 Link태그의 차이는 무엇인가요?'
+type: 'interview'
+language: 'FE-interview'
+tags:
+  - useRouter
+  - link
+  - 라우팅
+dateModified: 2025.00.00
+---
+
+{/* 📌 인터뷰 문서 */}
+
+## 답변
+
+Next.js의 `Link`는 선언적 라우팅으로, UI에서 유저가 클릭할 때 동작합니다.
+내부적으로는 `<a>`태그를 사용하고, prefetch까지 지원해서 네비게이션이나 메뉴 기능에 적합합니다.
+반면 `useRouter`는 명령적 라우팅으로, 로그인 성공 후 자동 이동 같은 코드 로직에서 사용됩니다.
+`push`, `replace`, `back`과 같은 메서드를 통해 상황에 따라 유연한 제어가 가능합니다.
+
+## useRouter
+
+```jsx
+'use client';
+import { useRouter } from 'next/navigation';
+
+export default function Login() {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    const success = true;
+    if (success) router.push('/dashboard');
+  };
+
+  return <button onClick={handleLogin}>로그인</button>;
+}
+```
+
+- next/navigation에서 가져와서 쓰는 클라이언트 사이드 라우팅 도구 (Next.js 13버전 이후)
+- 사용자가 클릭하지 않아도 조건/이벤트에 따라 명령적, 로직 기반 이동
+- UI 요소가 아니라 코드에서 이동하기 때문에, 검색 엔진 크롤러가 자동으로 따라가기 어려워 SEO에 취약할 수 있음
+  - `router.push()` : 브라우저 히스토리에 기록을 추가하고 이동
+  - `router.replace()` : 브라우저 히스토리에 기록을 남기지 않고 이동
+  - `router.back()` : 이전 페이지로 이동
+- 사용 예시 : 네비게이션 메뉴, 카테고리, Footer링크, 탭 메뉴 등
+
+## Link
+
+```tsx
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <nav>
+      <Link href="/about">소개 페이지</Link>
+      <Link href="/board">커뮤니티</Link>
+    </nav>
+  );
+}
+```
+
+- Next.js에서 제공하는 클라이언트 사이드 라우팅 도구
+- prefetch 기본 동작 : `Link`가 뷰포트에 들어오면, 해당 `Link`의 페이지 컴포넌트를 미리 가져오기 때문에, 사용자가 클릭 시 바로 페이지를 렌더링 가능
+- 내부적으로 생성된 `<a>` 태그 적분에 검색 엔진이 페이지를 따라가 색인 가능하며, SSR/SSG 페이지와 함께 사용하면 SEO에 유리하다.
+- 사용 예시 : 로그인/회원가입 후 자동 이동, 결제완료 후 리디렉션, 폼 제출 후 결과 페이지 이동 등
