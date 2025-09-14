@@ -1,0 +1,70 @@
+---
+title: Criteria API로 동적 쿼리 사용
+type: 'concept'
+language: Java
+tags:
+  - Java
+  - JPA
+dateModified: 2025.09.15
+---
+
+# Criteria API란?
+- Criteria API는 JPA에서 제공하는 동적 쿼리 생성 도구로, SQL과 유사한 JPQL을  Java로 작성할 수 있도록 하는 API입니다.
+
+## 문자열 기반 JPQL
+- 문자열 기반 JQPL은 컴파일 시점에서 오류 검증을 하는 데에 한계가 있습니다. 개발 단계에서 오타나 타입이 불일치 되는 경우는 런타임시점에서 발견되기 때문에 프로덕션 환경에서 예상치 못한 오류가 발생할 위험이 있습니다.
+
+## Criteria API
+- Criteria API는 컴파일 시점에서 타입 안정성을 보장하여 이러한 문제를 사전에 방지할 수 있습니다. 하지만 코드가 복잡해져 간단한 쿼리에서는 가독성과 생산성이 저하될 수 있습니다.
+
+
+# Criteria API의 구성 요소
+
+## CriteriaBuilder
+- Criteria API의 진입점으로, 쿼리 생성에 필요한 객체를 제공합니다.
+- 동적 조건(Predicate) 생성, 정렬, 그룹화 등을 지원합니다.
+
+## CriteriaQuery&lt;T&gt;
+- 특정 엔티티 타입(T)에 대한 쿼리를 정의하는 객체입니다.
+- 엔티티를 조회하는 쿼리의 전체 구조를 정의합니다.
+
+## Root&lt;T&gt;
+- 쿼리의 FROM 절에 해당하며, 엔티티의 루트 객체를 나타냅니다.
+- 조회할 엔티티를 지정하고 속성에 접근할 수 있는 시작점입니다.
+
+## Predicate
+- WHERE 절에서 사용되는 조건을 나타내는 객체입니다.
+- 여러 조건을 조합하여 동적으로 WHERE 절을 생성할 수 있습니다.
+
+
+# Criteria API 활용 예제 
+
+```Java
+    @Override
+    public List<User> findUsersByEmail(String name, String email) {
+		    
+		    // 기본 도구 준비
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> query = cb.createQuery(User.class);
+        Root<User> user = query.from(User.class);
+				
+				// 동적 조건 처리
+        List<Predicate> predicates = new ArrayList<>();
+        
+        // 입력값이 존재하는 경우에만 조건을 추가합니다.
+        if (name != null) {
+            predicates.add(cb.equal(user.get("name"), name));
+        }
+        if (email != null) {
+            predicates.add(cb.equal(user.get("email"), email));
+        }
+				// 조건을 and로 결합하여 하나의 where절로 만듭니다.
+        query.select(user).where(cb.and(predicates.toArray(new Predicate[0])));
+				
+				// 쿼리 실행
+        return entityManager.createQuery(query).getResultList();
+    }
+```
+- 입력값이 name 만 있을 경우 생성되는 SQL은 WHERE name = 이름 
+- 입력값이 둘 다 있을 경우 생성되는 SQL은 WHERE name = 이름 AND email = 이메일@example.com
+- 둘 다 입력 값이 없을 경우 조건 없는 전체 조회
