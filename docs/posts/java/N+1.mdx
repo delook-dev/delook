@@ -1,0 +1,125 @@
+---
+title: JPA의 N+1 문제
+type: 'concept'
+language: Java
+tags:
+  - JPA
+  - Hibernate
+dateModified: 2025.09.14
+---
+
+# N+1 Problem 이란?
+
+N+1 문제란, 연관관계가 설정된 엔티티를 조회할 때, 1개의 메인 쿼리 + 연관된 엔티티 조회를 위한 N개의 쿼리가 추가로 발생하는 현상을 말합니다.
+
+예를 들어, 'Post' 20개를 조회한 뒤 각 'Post'의 'Comment' 목록에 접근한다면,
+- 메인 쿼리 1회 ('Post' 조회)
+- 연관 쿼리 20회 ('Comment' 조회)
+
+총 21개의 쿼리가 실행됩니다.
+
+## 발생 원인
+
+- JPA/Hibernate는 연관 엔티티를 지연 로딩(Lazy Loading) 으로 설정하는 것이 기본입니다.
+- 연관 객체는 프록시(Proxy)로 주입되고, 실제 접근할 때 SQL이 실행되기 때문입니다.  
+
+```java
+@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+private List<Comment> comments = new ArrayList<>();
+```
+
+위 코드처럼 설정한다면 Post 엔티티는 조회 시 comments 컬렉션을 실제 DB에서 바로 불러오지 않고 프록시(Proxy)객체를 주입합니다.
+이후 반복문 등에서 comments에 접근하는 순간, 개별 Post마다 추가 쿼리가 실행되면서 N+1 문제가 발생합니다.
+
+## 문제가되는 이유
+- 데이터가 많을수록 쿼리 수가 기하급수적으로 증가합니다.
+- DB부하 증가는 서버 성능 저하로 이어집니다.
+- 응답 시간 지연은 사용자 경험을 악화시킵니다.
+- 네트워크 트래픽 병목이 발생합니다.
+
+즉, 단순히 쿼리 개수의 문제가 아니라, 서비스 확장성에 직접적인 영향을 미칩니다.
+
+## 해결 방법
+
+### 1. FetchType.EAGER 사용 지양
+
+- 즉시 로딩을 하면 Post 조회 시 무조건 Comment까지 함께 가져옵니다.
+- 그러나 제어가 어렵고 필요없는 데이터까지 불필요하게 조회할 수 있습니다.
+- EAGER는 단건 조회에서는 조인 최적화가 가능하나, 다건 조회에서는 여전히 N+1 문제가 발생할 수 있습니다.
+
+### 2. Fetch Join 사용
+```java
+@Query("SELECT p FROM Post p JOIN FETCH p.comments")
+List<Post> findAllPostFetchJoinComments();
+```
+- 한 번의 쿼리로 연관된 엔티티까지 조회합니다.
+- 가장 직관적이고 많이 사용하는 방법입니다.
+- 단, 컬렉션 2개 이상은 카다시안 곱 발생(데이터 뻥튀기) 위험이 있어 Fetch Join 불가합니다.
+
+### 3. @BatchSize 사용
+```java
+@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+@BatchSize(size = 100)
+private List<Comment> comments = new ArrayList<>();
+```
+- Lazy Loading 유지하면서, 내부적으로 WHERE IN 쿼리로 일괄 조회할 수 있습니다.
+- 전역 설정 방법 : ```spring.jpa.properties.hibernate.default_batch_fetch_size=100```
+
+### 4. @EntityGraph 사용
+```java
+@EntityGraph(attributePaths = {"comments"})
+List<Post> findAll();
+```
+- 별도 쿼리 없이 Left Outer Join으로 연관 엔티티까지 한 번에 조회할 수 있습니다.
+- 명시적으로 특정 연관 필드만 Fetch 조인하고 싶을 때 유용합니다.
+
+### 5. QueryDSL/MyBatis와 같은 직접 쿼리 작성
+- 직접 쿼리를 정의하며 필요한 데이터만 조인 또는 서브쿼리로 조회 가능합니다
+- 복잡한 동적 조건이나 다대다 관계 최적화에 유리합니다.
+
+### 6. Projection 활용
+
+- 연관 엔티티까지 한 번에 모두 불러오는 대신, 필요한 필드만 DTO나 인터페이스 기반 Projection으로 조회할 수 있습니다.
+- 이렇게 하면 JPA가 엔티티를 프록시로 로딩하지 않고, 필요한 데이터만 SELECT 절에 포함해 가져오기 때문에 N+1 문제를 피할 수 있습니다.
+
+#### 인터페이스 기반 Projection
+```java
+public interface PostWithCommentCount {
+    String getTitle();
+    int getCommentCount();
+}
+
+@Query("SELECT p.title AS title, SIZE(p.comments) AS commentCount " +
+       "FROM Post p")
+List<PostWithCommentCount> findAllPostWithCommentCount();
+```
+
+#### 클래스 기반 DTO Projection
+```java
+public class PostDto {
+    private final String title;
+    private final String author;
+```
+
+```java
+    public PostDto(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+}
+```
+
+```java
+@Query("SELECT new com.example.PostDto(p.title, p.author) " +
+       "FROM Post p JOIN p.comments c")
+List<PostDto> findAllPostDto();
+````
+- 장점 : 엔티티를 전부 로딩하지 않고 필요한 데이터만 가져오기 때문에 쿼리 효율이 좋습니다.
+- 단점 : 엔티티가 아니므로 영속성 컨텍스트에서 관리되지 않습니다. (변경 감지, 지연 로딩 불가)
+- 따라서 조회 전형 API에 적합합니다.
+
+
+## 정리
+N+1 문제는 JPA를 사용할 때 자주 발생하는 대표적인 성능 문제입니다.
+- 단순히 EAGER 로딩으로 해결하기보다는, 상황에 맞게 Fetch Join, @BatchSize, @EntityGraph, Projection 등을 조합해서 사용하는 것이 바람직합니다.
+- 더 복잡한 경우에는 QueryDSL, MyBatis 등으로 직접 쿼리를 제어하는 전략이 필요합니다.
