@@ -77,7 +77,49 @@ List<Post> findAll();
 - 직접 쿼리를 정의하며 필요한 데이터만 조인 또는 서브쿼리로 조회 가능합니다
 - 복잡한 동적 조건이나 다대다 관계 최적화에 유리합니다.
 
+### 6. Projection 활용
+
+- 연관 엔티티까지 한 번에 모두 불러오는 대신, 필요한 필드만 DTO나 인터페이스 기반 Projection으로 조회할 수 있습니다.
+- 이렇게 하면 JPA가 엔티티를 프록시로 로딩하지 않고, 필요한 데이터만 SELECT 절에 포함해 가져오기 때문에 N+1 문제를 피할 수 있습니다.
+
+#### 인터페이스 기반 Projection
+```java
+public interface PostWithCommentCount {
+    String getTitle();
+    int getCommentCount();
+}
+
+@Query("SELECT p.title AS title, SIZE(p.comments) AS commentCount " +
+       "FROM Post p")
+List<PostWithCommentCount> findAllPostWithCommentCount();
+```
+
+#### 클래스 기반 DTO Projection
+```java
+public class PostDto {
+    private final String title;
+    private final String author;
+```
+
+```java
+    public PostDto(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+}
+```
+
+```java
+@Query("SELECT new com.example.PostDto(p.title, p.author) " +
+       "FROM Post p JOIN p.comments c")
+List<PostDto> findAllPostDto();
+````
+- 장점 : 엔티티를 전부 로딩하지 않고 필요한 데이터만 가져오기 때문에 쿼리 효율이 좋습니다.
+- 단점 : 엔티티가 아니므로 영속성 컨텍스트에서 관리되지 않습니다. (변경 감지, 지연 로딩 불가)
+- 따라서 조회 전형 API에 적합합니다.
+
+
 ## 정리
 N+1 문제는 JPA를 사용할 때 자주 발생하는 대표적인 성능 문제입니다.
-- 단순히 EAGER 로딩으로 해결하기보다는, 상황에 맞게 Fetch Join, @BatchSize, @EntityGraph 등을 조합해서 사용하는 것이 바람직합니다.
+- 단순히 EAGER 로딩으로 해결하기보다는, 상황에 맞게 Fetch Join, @BatchSize, @EntityGraph, Projection 등을 조합해서 사용하는 것이 바람직합니다.
 - 더 복잡한 경우에는 QueryDSL, MyBatis 등으로 직접 쿼리를 제어하는 전략이 필요합니다.
