@@ -1,0 +1,198 @@
+---
+title: 'React Suspense로 자연스러운 로딩 처리하기'
+type: 'concept'
+language: 'React'
+tags:
+  - Suspense
+  - Rendering
+  - React 19
+  - Transition
+dateModified: 2025.09.14
+---
+
+# React Suspense
+
+> `<Suspense>`는 자식 UI가 준비되기 전까지 대체 UI(fallback)를 보여주는 경계입니다. 데이터/코드가 준비되면 자동으로 실제 UI로 전환됩니다. 공식 문서를 기반으로 최신(React 19.x) 동작과 패턴을 정리했습니다.
+
+## 핵심 요약
+
+- **역할**: 지연되는 하위 트리의 로딩 상태를 선언적으로 제어하고, 준비되면 자연스럽게 실제 UI로 전환.
+- **형태**:
+  ```tsx
+  <Suspense fallback={<Loading />}>
+    <SomeComponent />
+  </Suspense>
+  ```
+- **주요 포인트**
+  - `children`의 렌더링이 지연되면 `fallback`이 대신 렌더링됩니다.
+  - 최초 마운트 이전에 지연된 트리의 state는 유지되지 않습니다. 준비되면 처음부터 다시 렌더링됩니다.
+  - 이미 보이는 콘텐츠가 다시 지연될 때는, 긴급하지 않은 업데이트(예: `startTransition`, `useDeferredValue`)가 아닌 한 `fallback`으로 돌아갈 수 있습니다.
+  - 지연으로 인해 보이는 콘텐츠를 숨겨야 할 때 React는 해당 트리의 Layout Effect를 정리하고, 다시 보일 때 재실행합니다.
+
+## 언제, 왜 사용하는가?
+
+- **데이터/코드 준비 전 대체 UI 제공**: UX 일관성, 깜빡임(flicker) 완화, Skeleton/Spinner 패턴을 표준화.
+- **점진적 표시(Progressive Revealing)**: 상단 프레임은 즉시, 비중요 섹션은 준비되는 대로.
+- **라우팅/탐색과의 조화**: 전환 동안 이전 화면 유지, 필요 시 경계 재설정(key)로 새 경로에 맞는 로딩 표시.
+- **서버 스트리밍/에러 처리**: 서버 렌더링 스트림에서 경계 단위로 Fallback을 삽입하고, 클라이언트에서 복구 시 실제 UI로 대체.
+
+## 기본 사용법
+
+### 1) 로딩 중 대체 UI 보여주기
+
+```tsx
+import { Suspense } from 'react';
+
+function Page() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <MainContent />
+    </Suspense>
+  );
+}
+```
+
+- `MainContent`가 데이터를 읽는 동안(또는 코드가 분할 로딩 중) `Spinner`가 보입니다.
+- 데이터는 보통 React 19 `use`, RSC, 라우터와 함께 연동합니다.
+
+### 2) 여러 콘텐츠를 한꺼번에 표시하기
+
+여러 하위 섹션을 하나의 경계로 묶으면, 모두 준비될 때까지 하나의 `fallback`만 보입니다.
+
+```tsx
+<Suspense fallback={<SkeletonAll />}>
+  <Header />
+  <Chart />
+  <Table />
+</Suspense>
+```
+
+### 3) 중첩 경계로 점진적 표시
+
+상위는 빠르게, 하위는 준비되는 대로 순차적으로 드러나게 할 수 있습니다.
+
+```tsx
+<Suspense fallback={<ShellSkeleton />}>
+  <Shell>
+    <Suspense fallback={<ChartSkeleton />}>
+      <Chart />
+    </Suspense>
+    <Suspense fallback={<TableSkeleton />}>
+      <Table />
+    </Suspense>
+  </Shell>
+</Suspense>
+```
+
+### 4) 새 콘텐츠 로딩 중 이전 콘텐츠 유지하기
+
+업데이트를 transition으로 처리하면, 이미 보이는 UI가 불필요하게 `fallback`으로 되돌아가지 않습니다.
+
+```tsx
+import { Suspense, useTransition, useState } from 'react';
+
+function Page() {
+  const [tab, setTab] = useState<'home' | 'stats'>('home');
+  const [isPending, startTransition] = useTransition();
+
+  const go = (next: 'home' | 'stats') => startTransition(() => setTab(next));
+
+  return (
+    <>
+      {isPending && <div style={{ height: 3 }} aria-live="polite" />}
+      <button onClick={() => go('home')} disabled={isPending}>
+        홈
+      </button>
+      <button onClick={() => go('stats')} disabled={isPending}>
+        통계
+      </button>
+      <Suspense fallback={<Skeleton />}>{tab === 'home' ? <Home /> : <Stats />}</Suspense>
+    </>
+  );
+}
+```
+
+### 5) Navigation에서 Suspense 재설정하기
+
+서로 “다른” 콘텐츠로 간주되어야 할 탐색(예: 사용자 A → B) 시 `key`로 경계를 재설정합니다.
+
+```tsx
+function ProfilePage({ userId }: { userId: string }) {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <UserProfile key={userId} id={userId} />
+    </Suspense>
+  );
+}
+```
+
+### 6) 서버 에러·클라이언트 전용 콘텐츠 Fallback
+
+서버에서 특정 컴포넌트를 렌더링하지 않도록 의도적으로 에러를 던지고, 경계로 감싸 대체 UI를 서버 HTML에 포함시킬 수 있습니다. 클라이언트에서는 정상 렌더링되면 실제 UI로 교체됩니다.
+
+```tsx
+<Suspense fallback={<Loading />}>
+  <Chat />
+</Suspense>;
+
+function Chat() {
+  if (typeof window === 'undefined') {
+    throw Error('Chat should only render on the client.');
+  }
+  return <div>채팅</div>;
+}
+```
+
+## 설계 지침과 베스트 프랙티스
+
+- **경계는 “사용자 인지 단위”로**: 페이지 프레임/네비게이션과 콘텐츠 영역을 나누고, 콘텐츠 영역은 필요시 더 쪼갭니다.
+- **Skeleton 우선**: 레이아웃 점프를 최소화하려면 실제 레이아웃과 유사한 Skeleton을 `fallback`으로 사용합니다.
+- **경계는 작게, 그러나 너무 잘게 쪼개지 않기**: 경계가 너무 많으면 관리 비용과 렌더링 복잡성이 증가.
+- **transition으로 깜빡임 차단**: 탐색/페이지네이션/필터 변경 등에서 `startTransition`을 사용해 이미 보이는 UI가 불필요하게 `fallback`으로 되돌아가지 않도록 합니다.
+- **라우터 통합**: 라우터가 Suspense를 통합하면 업데이트를 자동으로 transition으로 래핑하고, 경계 재설정(key)도 자동 처리하는 경우가 많습니다.
+- **코드 스플리팅과 함께**: `React.lazy`로 코드 분할하고 Suspense로 로딩 상태를 구성합니다.
+
+## 안티패턴과 주의사항
+
+1. **앱 전체를 하나의 거대한 경계로 감싸기**
+
+- 작은 변경에도 전체가 `fallback`으로 바뀌어 사용자 경험이 불안정해질 수 있습니다. 기능/섹션 단위로 경계를 나눕니다.
+
+2. **긴급 업데이트에서 서스펜드 유발**
+
+- 사용자 입력에 즉각 반응해야 하는 업데이트(예: 입력창 타이핑)에서 `fallback`으로 돌아가면 UX가 나빠집니다. 이런 업데이트는 서스펜드가 발생하지 않도록 하거나, 필요한 경우 `startTransition`을 활용해 긴급하지 않은 업데이트로 분리합니다.
+
+3. **`useEffect`에서의 일반 fetch에 과도한 의존**
+
+- 단순한 `useEffect` fetch는 Suspense와 직접 통합되지 않습니다. React 19 `use`, 서버 컴포넌트, 라우터/데이터 라이브러리의 Suspense 통합을 사용합니다.
+
+4. **Fallback이 실 콘텐츠와 괴리**
+
+- Fallback과 실제 UI의 레이아웃/밀도가 크게 다르면 전환 시 레이아웃 점프가 커집니다. Skeleton을 실제와 유사하게 유지합니다.
+
+5. **경계 재설정 누락**
+
+- 사용자/게시글 등 식별자가 바뀌어 “다른 콘텐츠”로 취급되어야 할 때만 경계 하위에 `key`를 부여합니다.
+- 불필요한 재설정은 캐시/상태 손실과 잦은 스켈레톤 노출을 초래합니다.
+
+- **데이터 패칭 레이어 설계**
+  - 매 렌더마다 새로운 Promise를 만들지 말고, 동일한 입력에 대해 재사용되는 리소스 키를 정의합니다(메모이즈/캐시).
+  - 라우터/데이터 라이브러리의 Suspense 통합 또는 React 19 `use`를 통해 자연스럽게 경계와 연동합니다.
+  - 사용자 행동 기반 프리페치(hover/viewport 진입)로 체감 지연을 줄입니다.
+
+- **코드 스플리팅 연계**
+  - 기능/라우트 단위로 `lazy` 경계를 두고, 과도한 중첩으로 워터폴이 생기지 않게 청크 경계를 설계합니다.
+
+- **SSR/스트리밍 시 유의점**
+  - 서버에서 경계별 `fallback`이 먼저 스트리밍되므로, 서버/클라이언트가 동일한 마크업 구조를 유지하도록 결정론을 지킵니다(수화 불일치 방지).
+  - 느린 아일랜드는 바깥 경계로, 히어로는 안쪽 경계로 세분해 초기 표시 품질을 최적화합니다.
+
+- **성능 관측과 목표**
+  - LCP/CLS/INP 관점에서 경계 배치가 사용자 체감에 미치는 영향을 측정합니다.
+  - transition 시점에 `performance.mark`를 남겨 isPending 구간과 사용자 상호작용 지표를 연계하면 원인 분석이 쉽습니다.
+
+- **Effect/레이아웃 측정 주의**
+  - 보였다 숨겨지는 동안 해당 트리의 Layout Effect는 cleanup→재실행됩니다. 숨김 상태에서 DOM 측정을 가정하지 않습니다.
+
+- **Error Boundary와의 배치**
+  - 하나의 영역에 대해 Suspense와 ErrorBoundary를 형제/중첩으로 함께 배치하여 로딩/에러를 각각 명확히 처리합니다.
