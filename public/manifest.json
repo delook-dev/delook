@@ -3,7 +3,7 @@
   "name": "디룩(Delook)",
   "author": "@waterbinnn",
   "homepage_url": "https://www.delook.co.kr/",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "개념 학습부터 기술 면접 준비까지, 성장하는 개발자의 새 탭",
   "action": {
     "default_popup": "popup.html",
