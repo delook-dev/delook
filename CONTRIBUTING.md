@@ -22,7 +22,6 @@ Delook(디룩) 오픈소스 프로젝트에 관심을 가져주셔서 감사합�
 현재 디룩 프로젝트는 다음 두 가지 방식의 기여를 받고 있습니다:
 
 1. **프로그래밍 관련 콘텐츠 기여**
-
    - 새로운 프로그래밍 개념이나 지식, 기술 면접 질의응답 콘텐츠
    - 기존 콘텐츠의 개선 및 보완
 
@@ -39,7 +38,6 @@ Delook(디룩) 오픈소스 프로젝트에 관심을 가져주셔서 감사합�
 2. 작업 전 반드시 이슈(issue)를 생성합니다. 작업할 주제를 명확히 하고, 템플릿에 따라 작성해주세요.
 
 3. main 브랜치에서 새로운 브랜치를 생성해 작업합니다.
-
    - **콘텐츠 기여의 경우**: `docs/작성자명/주제` 형식 (예: `docs/waterbinnn/js-array`)
    - **버그 수정의 경우**: `fix/작성자명/버그-설명` 형식 (예: `fix/waterbinnn/scroll`)
 
@@ -152,7 +150,7 @@ yml 형태의 `title`, `type`, `language`, `tags`, `dateModified`는 문서의 �
 ---
 title: 문서 제목 (40자 이내로 작성)
 type: 'concept'  // 문서 유형 (concept 또는 interview)
-language: 언어 또는 주제 카테고리 (예: JavaScript, FE-Interview)
+language: 언어 또는 주제 카테고리 (예: JavaScript, FE-Interview) - 폴더명과 동일해야 함
 tags:
   - Tag1  // 키워드는 대문자로 시작
   - Tag2
