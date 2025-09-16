@@ -53,7 +53,7 @@ export default function Form() {
 ```jsx
 import { useState, useRef, useEffect } from 'react';
 
-function Counter() {
+export default function Counter() {
   const [count, setCount] = useState(0);
   const prevCountRef = useRef();
 
@@ -63,7 +63,7 @@ function Counter() {
 
   const previousCount = prevCountRef.current;
 
-  const handleCounter = () => {
+  function handleCounter() {
     setCount(count + 1);
   };
 
@@ -75,7 +75,5 @@ function Counter() {
     </div>
   );
 }
-
-export default Counter;
 ```
 
