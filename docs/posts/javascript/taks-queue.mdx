@@ -1,0 +1,152 @@
+---
+title: 매크로 태스크 큐와 마이크로 태스크 큐
+type: 'concept'
+language: JavaScript
+tags:
+  - Javascript
+  - EventLoop
+  - TaskQueue
+dateModified: 2025.09.18
+---
+
+# 매크로 태스크 큐와 마이크로 태스크 큐
+
+### 자바스크립트의 일 처리 시스템
+
+자바스크립트가 일(task)을 처리하는 방식을 카페의 바리스타가 일하는 것에 빗대어 보겠습니다.
+
+자바스크립트라는 바리스타는 한 번에 하나의 일만 할 수 있고(싱글 스레드), 현재 일을 끝내야 다음 일을 시작할 수 있습니다.
+
+<br />
+
+#### CallStack : 현재 진행 중인 일
+
+콜스택은 바리스타가 지금 당장 하고 있는 일을 말합니다.
+
+<br />
+
+#### Task Queue: 대기 중인 일들
+
+시간이 걸리는 일들은 바로 처리할 수 없으므로 대기 줄에 세워둡니다.
+
+(ex: "5분 후에 커피 완성 알림", "10분 후에 배달 출발")
+
+이런 대기 줄은 두 종류로 나뉘어 집니다.
+
+- 일반 대기 줄 : **매크로 태스크 큐(Macrotask Queue)**
+- 급한 일 대기 줄 : **마이크로 태스크 큐(Microtask Queue)**
+
+<br />
+#### EventLoop : 작업 관리자
+
+바리스타 옆에는 작업 관리자가 있으며, 다음과 같은 일을 반복합니다.
+
+1. 지금 진행 중인 일이 있는지 확인 (콜 스택 확인)
+2. 없다면, 급한 대기 일부터 처리하도록 지시 (마이크로 태스크 큐 확인)
+3. 급한 일도 없다면, 일반 대기 일을 처리하도록 지시 (매크로 태스크 큐 확인)
+
+<br />
+
+### 매크로 태스크 큐와 마이크로 태스크 큐 비교
+
+| 구분                | 매크로 태스크 큐 (Macrotask Queue)                                             | 마이크로 태스크 큐 (Microtask Queue)                                                        |
+| ------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **우선순위**        | 낮음                                                                           | 높음                                                                                        |
+| **실행 시점**       | 콜 스택이 비고 마이크로 태스크가 모두 처리된 후                                | 콜 스택이 비면 즉시                                                                         |
+| **처리 방식**       | 한 번에 하나씩 처리                                                            | 큐가 빌 때까지 모두 처리                                                                    |
+| **주요 API**        | `setTimeout()`, `setInterval()`, `setImmediate()`, DOM 이벤트, I/O 작업        | `Promise.then()`, `Promise.catch()`, `Promise.finally()`, `async/await`, `queueMicrotask()` |
+| **카페 비유**       | 일반 대기 줄 (예약 주문, 배달 등)                                              | 급한 일 대기 줄 (바로 처리해야 할 후속 작업)                                                |
+| **실행 주기**       | 이벤트 루프의 각 턴마다 하나씩                                                 | 이벤트 루프의 각 턴에서 큐가 빌 때까지                                                      |
+| **브라우저 렌더링** | 렌더링 기회 제공 (ex: 각 매크로 태스크 사이에 브라우저가 렌더링할 기회를 가짐) | 렌더링 차단 가능성 (ex: 많은 마이크로 태스크의 실행 시 화면이 멈춘 것처럼 보일 수 있음)     |
+
+<br />
+
+### 매크로 태스크 큐와 마이크로 태스크 큐를 분리해 설계한 이유
+
+#### 작업의 성격에 따른 분류
+
+- 마이크로 태스크 (긴급한 후속 작업)
+
+```js
+// 현재 작업과 논리적으로 연결된 즉시 처리할 작업
+fetch('/api/user')
+  .then((response) => response.json()) // 응답을 받았으니 바로 파싱해야 함
+  .then((data) => validateUser(data)) // 파싱했으니 바로 검증해야 함
+  .catch((error) => logError(error)); // 에러가 났으니 바로 로깅해야 함
+```
+
+- 매크로 태스크 (독립적인 새로운 작업)
+
+```js
+// 시간이 지나거나, 외부 이벤트로 시작되는 독립적 작업
+setTimeout(() => checkHeartbeat(), 5000); // 5초 후 상태 체크
+button.onclick = () => handleClick(); // 사용자 클릭 시 처리
+```
+
+#### 프로그램 실행의 예측 가능성 보장
+
+만약 모든 비동기 작업이 같은 우선순위라면 실행 순서를 예측하기 어렵습니다.
+
+```js
+만약 Promise도 매크로 태스크였다면...
+Promise.resolve().then(() => console.log('Promise 1'));
+setTimeout(() => console.log('Timer 1'), 0);
+Promise.resolve().then(() => console.log('Promise 2'));
+setTimeout(() => console.log('Timer 2'), 0);
+
+// 예측: Timer 1, Promise 1, Timer 2, Promise 2 ???
+// 실제 실행시: Promise 1, Promise 2, Timer 1, Timer 2 (마이크로 태스크 우선)
+```
+
+#### 성능과 응답성의 균형
+
+성능(빠른 처리) 과 응답성(화면 멈추지 않음) 을 동시에 챙기기 위한 선택
+
+```js
+async function processData() {
+  const data = await fetchData(); // 마이크로 태스크 → 응답 즉시 처리
+  const processed = await processData(); // 마이크로 태스크 → 연속 처리
+
+  // UI 업데이트는 매크로 태스크로 미뤄둠 → 브라우저 렌더링 기회 제공
+  setTimeout(() => {
+    updateUI(processed);
+  }, 0);
+}
+```
+
+<br />
+
+### 매크로 태스크 큐와 마이크로 태스크 큐를 적용한 예시
+
+CPU 소모가 많은 무거운 작업을 할 때, 태스크를 쪼갤 수 있습니다.
+
+- 잘못된 패턴 : 모든 걸 마이크로 태스크로 실행
+
+```js
+// 1000개의 연속 작업이 모두 마이크로 태스크로 실행되며,
+// → 브라우저가 다른 일(렌더링, 이벤트 처리)을 할 기회가 없음
+for (let i = 0; i < 1000; i++) {
+  Promise.resolve().then(() => {
+    heavyOperation(i);
+  });
+}
+```
+
+- 개선된 패턴 : setTimeout을 이용해 매크로 태스크로 일부 분리
+
+```js
+function processChunk(start, end) {
+  return new Promise((resolve) => {
+    for (let i = start; i < end; i++) {
+      heavyOperation(i); // 마이크로 태스크로 즉시 처리
+    }
+
+    // 다음 청크는 매크로 태스크로 분리
+    if (end < 1000) {
+      setTimeout(() => processChunk(end, end + 100), 0);
+    }
+
+    resolve();
+  });
+}
+```
