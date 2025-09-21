@@ -1,0 +1,383 @@
+---
+title: SOLID 원칙
+type: 'concept'
+language: Java
+tags:
+  - Java
+  - OOP
+  - Design Pattern
+dateModified: 2025.09.21
+---
+
+# SOLID 원칙이란?
+
+SOLID는 객체지향 프로그래밍과 설계의 5가지 기본 원칙을 의미합니다. 로버트 마틴이 명명한 이 원칙들은 소프트웨어를 더 이해하기 쉽고, 유연하며, 유지보수하기 쉽게 만들어줍니다.
+
+- **S**ingle Responsibility Principle (단일 책임 원칙)
+- **O**pen-Closed Principle (개방-폐쇄 원칙)
+- **L**iskov Substitution Principle (리스코프 치환 원칙)
+- **I**nterface Segregation Principle (인터페이스 분리 원칙)
+- **D**ependency Inversion Principle (의존관계 역전 원칙)
+
+## 1. Single Responsibility Principle (단일 책임 원칙)
+
+**"한 클래스는 하나의 책임만 가져야 한다."**
+
+클래스를 변경하는 이유는 단 하나여야 합니다. 하나의 클래스가 여러 책임을 가지면, 한 책임의 변경이 다른 책임에 영향을 줄 수 있습니다.
+
+#### 잘못된 예시
+
+```java
+// SRP 위반: 사용자 관리와 이메일 발송이라는 두 가지 책임을 가짐
+class User {
+    private String name;
+    private String email;
+    
+    public void save() {
+        // 데이터베이스에 사용자 정보 저장
+    }
+    
+    public void sendEmail(String message) {
+        // 이메일 발송 로직
+        System.out.println("Sending email to " + email + ": " + message);
+    }
+}
+```
+
+#### 개선된 예시
+
+```java
+// 사용자 정보 관리만 담당
+class User {
+    private String name;
+    private String email;
+    
+    public void save() {
+        // 데이터베이스에 사용자 정보 저장
+    }
+    
+    // getter, setter
+}
+
+// 이메일 발송만 담당
+class EmailService {
+    public void sendEmail(User user, String message) {
+        System.out.println("Sending email to " + user.getEmail() + ": " + message);
+    }
+}
+```
+
+## 2. Open-Closed Principle (개방-폐쇄 원칙)
+
+**"소프트웨어 요소는 확장에는 열려 있으나 변경에는 닫혀 있어야 한다."**
+
+기존 코드를 변경하지 않고도 기능을 확장할 수 있어야 합니다.
+
+#### 잘못된 예시
+
+```java
+// OCP 위반: 새로운 도형이 추가될 때마다 AreaCalculator를 수정해야 함
+class AreaCalculator {
+    public double calculateArea(Object shape) {
+        if (shape instanceof Rectangle) {
+            Rectangle rectangle = (Rectangle) shape;
+            return rectangle.width * rectangle.height;
+        } else if (shape instanceof Circle) {
+            Circle circle = (Circle) shape;
+            return Math.PI * circle.radius * circle.radius;
+        }
+        return 0;
+    }
+}
+```
+
+#### 개선된 예시
+
+```java
+// 추상화를 통한 확장 가능한 설계
+interface Shape {
+    double calculateArea();
+}
+
+class Rectangle implements Shape {
+    private double width, height;
+    
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return width * height;
+    }
+}
+
+class Circle implements Shape {
+    private double radius;
+    
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+class AreaCalculator {
+    public double calculateArea(Shape shape) {
+        return shape.calculateArea();
+    }
+}
+```
+
+## 3. Liskov Substitution Principle (리스코프 치환 원칙)
+
+**"프로그램의 객체는 프로그램의 정확성을 깨뜨리지 않으면서 하위 타입의 인스턴스로 바꿀 수 있어야 한다."**
+
+상위 타입의 객체를 하위 타입의 객체로 치환해도 프로그램이 올바르게 동작해야 합니다.
+
+#### 잘못된 예시
+
+```java
+// LSP 위반: 정사각형은 직사각형의 행동을 올바르게 대체하지 못함
+class Rectangle {
+    protected int width, height;
+    
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    
+    public void setHeight(int height) {
+        this.height = height;
+    }
+    
+    public int getArea() {
+        return width * height;
+    }
+}
+
+class Square extends Rectangle {
+    @Override
+    public void setWidth(int width) {
+        this.width = width;
+        this.height = width; // 정사각형은 가로세로가 같아야 함
+    }
+    
+    @Override
+    public void setHeight(int height) {
+        this.width = height;
+        this.height = height;
+    }
+}
+
+// 문제가 되는 코드
+public void testRectangle(Rectangle rectangle) {
+    rectangle.setWidth(5);
+    rectangle.setHeight(4);
+    // Rectangle이면 20을 기대하지만, Square면 16이 됨
+    assert rectangle.getArea() == 20; // Square일 때 실패
+}
+```
+
+#### 개선된 예시
+
+```java
+// 추상화를 통한 올바른 설계
+abstract class Shape {
+    abstract int getArea();
+}
+
+class Rectangle extends Shape {
+    private int width, height;
+    
+    public Rectangle(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    @Override
+    public int getArea() {
+        return width * height;
+    }
+}
+
+class Square extends Shape {
+    private int side;
+    
+    public Square(int side) {
+        this.side = side;
+    }
+    
+    @Override
+    public int getArea() {
+        return side * side;
+    }
+}
+```
+
+## 4. Interface Segregation Principle (인터페이스 분리 원칙)
+
+**"특정 클라이언트를 위한 인터페이스 여러 개가 범용 인터페이스 하나보다 낫다."**
+
+클라이언트는 자신이 사용하지 않는 메서드에 의존하지 않아야 합니다.
+
+#### 잘못된 예시
+
+```java
+// ISP 위반: 모든 기능이 하나의 인터페이스에 몰려있음
+interface Machine {
+    void print();
+    void scan();
+    void fax();
+}
+
+// 프린터만 필요한 클래스도 불필요한 메서드를 구현해야 함
+class SimplePrinter implements Machine {
+    @Override
+    public void print() {
+        System.out.println("Printing...");
+    }
+    
+    @Override
+    public void scan() {
+        throw new UnsupportedOperationException("Scan not supported");
+    }
+    
+    @Override
+    public void fax() {
+        throw new UnsupportedOperationException("Fax not supported");
+    }
+}
+```
+
+#### 개선된 예시
+
+```java
+// 기능별로 인터페이스 분리
+interface Printer {
+    void print();
+}
+
+interface Scanner {
+    void scan();
+}
+
+interface FaxMachine {
+    void fax();
+}
+
+// 필요한 기능만 구현
+class SimplePrinter implements Printer {
+    @Override
+    public void print() {
+        System.out.println("Printing...");
+    }
+}
+
+// 복합기는 여러 인터페이스를 구현
+class MultiFunctionPrinter implements Printer, Scanner, FaxMachine {
+    @Override
+    public void print() {
+        System.out.println("Printing...");
+    }
+    
+    @Override
+    public void scan() {
+        System.out.println("Scanning...");
+    }
+    
+    @Override
+    public void fax() {
+        System.out.println("Faxing...");
+    }
+}
+```
+
+## 5. Dependency Inversion Principle (의존관계 역전 원칙)
+
+**"추상화에 의존해야지, 구체화에 의존하면 안 된다."**
+
+- 상위 계층이 하위 계층에 의존하는 전통적인 의존관계를 역전시켜야 합니다.
+- 상위 계층과 하위 계층 모두 추상화에 의존해야 합니다.
+
+#### 잘못된 예시
+
+```java
+// DIP 위반: 상위 계층이 하위 계층의 구체적인 구현에 의존
+class MySQLDatabase {
+    public void save(String data) {
+        System.out.println("Saving to MySQL: " + data);
+    }
+}
+
+class UserService {
+    private MySQLDatabase database; // 구체적인 구현에 의존
+    
+    public UserService() {
+        this.database = new MySQLDatabase();
+    }
+    
+    public void saveUser(String userData) {
+        database.save(userData);
+    }
+}
+```
+
+#### 개선된 예시
+
+```java
+// 추상화에 의존하는 설계
+interface Database {
+    void save(String data);
+}
+
+class MySQLDatabase implements Database {
+    @Override
+    public void save(String data) {
+        System.out.println("Saving to MySQL: " + data);
+    }
+}
+
+class PostgreSQLDatabase implements Database {
+    @Override
+    public void save(String data) {
+        System.out.println("Saving to PostgreSQL: " + data);
+    }
+}
+
+class UserService {
+    private Database database; // 추상화에 의존
+    
+    public UserService(Database database) {
+        this.database = database;
+    }
+    
+    public void saveUser(String userData) {
+        database.save(userData);
+    }
+}
+
+// 사용 예시
+public class Main {
+    public static void main(String[] args) {
+        // 의존성 주입으로 구현체 선택
+        Database database = new MySQLDatabase();
+        UserService userService = new UserService(database);
+        userService.saveUser("User data");
+    }
+}
+```
+
+## 정리
+
+SOLID 원칙을 적용하면 다음과 같은 이점을 얻을 수 있습니다:
+
+- **유지보수성**: 변경이 다른 부분에 미치는 영향을 최소화합니다.
+- **확장성**: 새로운 기능을 기존 코드 변경 없이 추가할 수 있습니다.
+- **재사용성**: 각 클래스와 인터페이스가 명확한 책임을 가져 재사용하기 쉽습니다.
+- **테스트 용이성**: 의존성이 추상화되어 있어 테스트하기 쉽습니다.
+
+SOLID 원칙은 단순히 지켜야 할 규칙이 아니라, 좋은 객체지향 설계를 위한 가이드라인입니다. 상황에 따라 적절히 적용하여 코드의 품질을 향상시키는 것이 중요합니다.
