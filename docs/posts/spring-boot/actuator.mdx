@@ -1,0 +1,58 @@
+---
+title: Spring Boot Actuator의 정의와 사용법
+type: 'concept'
+language: spring-boot
+tags:
+  - Spring-Boot
+  - Actuator
+dateModified: 2025.09.21
+---
+
+# Spring Boot Actuator
+
+Spring Boot Actuator는 Spring Boot에서 제공하는 운영 환경을 위한 모니터링 및 관리 라이브러리입니다.  헬스 체크, 성능 지표 수집, 시스템 정보 조회 등의 기능을 HTTP 엔드포인트 형태로 제공합니다.
+별도 코드 작성 없이도 시스템 상태를 실시간으로 확인할 수 있게 해주며, Prometheus, Grafana 등 외부 모니터링 도구와의 연동도 지원합니다.
+
+## 주요 엔드포인트
+
+- **`/actuator/health`**: 애플리케이션의 상태(UP/DOWN)와 데이터베이스, 디스크 공간 등 의존성 컴포넌트의 건강 상태를 확인할 수 있습니다.
+- **`/actuator/info`**: 애플리케이션 이름, 버전, 팀 정보 등 메타데이터를 제공합니다.
+- **`/actuator/metrics`**: JVM 메모리 사용량, CPU 사용률, HTTP 요청 처리 시간 등 다양한 성능 메트릭을 확인할 수 있습니다.
+- **`/actuator/loggers`**: 실행 중인 애플리케이션의 로거별 로그 레벨을 조회하고 동적으로 변경할 수 있어 운영 환경에서 디버깅 시 매우 유용합니다.
+- **`/actuator/threaddump`**: 현재 JVM의 모든 스레드 상태와 스택 트레이스를 덤프하여 성능 병목이나 데드락 상황을 분석할 수 있습니다.
+- **`/actuator/prometheus`**: Prometheus가 수집할 수 있는 형태로 메트릭 데이터를 노출하여 외부 모니터링 시스템과의 연동을 지원합니다.
+
+## Actuator 사용하기
+
+### 의존성 추가
+- Gradle 기준
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-actuator'
+```
+
+### 설정 방법
+- application.yml(또는 application.properties)에서 원하는 엔드포인트를 활성화할 수 있습니다.
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info  
+          - metrics
+          - loggers
+          - threaddump
+```
+
+- 테스트 환경이나 개발 편의상 모든 Endpoint를 노출하려면 아래와 같이 설정 가능합니다.
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+```
+
+### 보안 고려사항
+운영 환경에서 Actuator Endpoint를 그대로 노출하는 것은 위험할 수 있기 때문에 Spring Security를 함께 사용해서 특정 권한이 있어야만 접근 가능하도록 설정하는 것이 일반적입니다.
