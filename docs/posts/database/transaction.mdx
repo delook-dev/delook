@@ -60,6 +60,7 @@ insert into dept values (50, '부서명', '지역명');
 
 rollback; -- 마지막 commit 시점으로 전체 취소
 rollback to savepoint SP1; -- SP1 이후 작업만 취소
+```
 
 ## 2. Consistency (일관성)
 
@@ -73,7 +74,13 @@ rollback to savepoint SP1; -- SP1 이후 작업만 취소
 여러 트랜잭션이 동시에 실행되더라도 서로의 작업에 영향을 주어서는 안 됩니다.
 한 트랜잭션의 결과는 해당 트랜잭션이 완료될 때까지 다른 트랜잭션에서 참조할 수 없습니다.
 
-4. Durability (지속성)
+## 4. Durability (지속성)
 
 트랜잭션이 완료되면 시스템 장애가 발생하더라도 결과는 유지되어야 합니다.
 이를 위해 Write Ahead Logging(WAL) 같은 기술이 사용됩니다.
+
+# 관련 개념 정리
+- rollback : 실행된 트랜잭션을 취소하고 이전 상태로 되돌리는 것을 의미합니다.
+- savepoint : 트랜잭션 중간에 되돌아갈 지점을 지정하는 것을 의미합니다. ROLLBACK TO 명령으로 해당 시점 이후 작업만 취소가 가능합니다.
+- trigger : 특정 이벤트(insert, update, delete 등)가 발생했을 때 자동으로 실행되는 SQL 코드입니다. 일관성 유지에 활용됩니다.
+- WAL (Write Ahead Logging) : 변경 사항을 실제 DB에 적용하기 전에 로그에 먼저 기록하는 방식을 의미합니다. 장애가 발생해도 로그를 이용해 데이터를 복구할 수 있습니다.
