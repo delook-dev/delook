@@ -1,0 +1,160 @@
+---
+title: 'Intercepting Routes'
+type: 'concept'
+language: 'next.js'
+tags:
+  - Next.js
+  - App Router
+  - Intercepting Routes
+  - Routing
+dateModified: 2025.09.14
+---
+
+import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
+
+# Intercepting Routes
+
+<ImageContainer category="next-js" fileName="intercepting-routes.png" alt="Intercepting Routes" />
+
+Next.js App Router에서 제공하는 고급 라우팅 기능으로, **같은 URL에 대해 다른 컴포넌트를 조건부로 렌더링**할 수 있게 해주는 기능입니다.
+
+## 개념
+
+**Intercepting Routes**는 현재 레이아웃 내에서 다른 경로의 페이지를 가로채어 렌더링할 수 있습니다. 주로 **모달, 사이드바, 인라인 컨텐츠** 등을 구현할 때 유용합니다.
+
+- **클라이언트 네비게이션**: Link로 이동할 때 intercept된 컴포넌트가 실행
+- **직접 접근/새로고침**: 실제 페이지가 렌더링
+
+
+
+## 컨벤션
+
+폴더명 앞에 특수 문법을 사용하여 어떤 경로를 가로챌지 지정합니다.
+
+| 컨벤션 | 설명 | 예시 |
+|--------|------|------|
+| `(.)` | 같은 레벨 | `(.)photos/[id]` |
+| `(..)` | 한 단계 위 | `(..)dashboard/settings` |
+| `(..)(..)` | 두 단계 위 | `(..)(..)admin/users` |
+| `(...)` | 앱 루트부터 | `(...)login` |
+
+## 구현 예시: 이미지 갤러리 모달
+
+### 폴더 구조
+```
+app/
+├── page.tsx           // 갤러리 목록
+├── photos/
+│   └── [id]/
+│       └── page.tsx   // 실제 사진 페이지
+└── (.)photos/
+    └── [id]/
+        └── page.tsx   // 모달로 표시될 페이지
+```
+
+### 갤러리 페이지
+```tsx
+// app/page.tsx
+import Link from 'next/link';
+
+export default function Gallery() {
+  const photos = [1, 2, 3, 4];
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {photos.map(id => (
+        <Link key={id} href={`/photos/${id}`}>
+          <img src={`/photo${id}.jpg`} alt={`Photo ${id}`} />
+        </Link>
+      ))}
+    </div>
+  );
+}
+```
+
+### 실제 페이지
+```tsx
+// app/photos/[id]/page.tsx
+export default function PhotoPage({ params }: { params: { id: string } }) {
+  return (
+    <div className="max-w-4xl mx-auto p-8">
+      <h1>Photo {params.id}</h1>
+      <img src={`/photo${params.id}.jpg`} alt={`Photo ${params.id}`} />
+      <p>Photo details...</p>
+    </div>
+  );
+}
+```
+
+### Intercepted 페이지 (모달)
+```tsx
+// app/(.)photos/[id]/page.tsx
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function PhotoModal({ params }: { params: { id: string } }) {
+  const router = useRouter();
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center"
+      onClick={() => router.back()}
+    >
+      <div className="bg-white p-4 rounded" onClick={e => e.stopPropagation()}>
+        <img src={`/photo${params.id}.jpg`} alt={`Photo ${params.id}`} />
+        <button onClick={() => router.back()}>닫기</button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 동작 방식
+
+1. **갤러리에서 이미지 클릭** (Link 사용) → 모달로 표시
+2. **URL 직접 접근** (`/photos/1`) → 전체 페이지로 표시  
+3. **모달에서 새로고침** → 전체 페이지로 전환
+
+## Parallel Routes와 함께 사용
+
+<ImageContainer category="next-js" fileName="parallel-routes.png" alt="Parallel Routes" />
+
+**Parallel Routes**는 같은 레이아웃에서 여러 페이지를 동시에 렌더링할 수 있게 해주는 기능입니다. `@폴더명` 형태로 슬롯을 정의하고, 레이아웃에서 props로 받아 사용합니다.
+더 깔끔한 구조를 위해 **Intercepting Routes**와 조합할 수 있습니다:
+
+```
+app/
+├── layout.tsx
+├── @modal/
+│   └── (.)photos/[id]/page.tsx
+└── photos/[id]/page.tsx
+```
+
+```tsx
+// app/layout.tsx
+export default function Layout({ children, modal }: {
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}) {
+  return (
+    <div>
+      {children}
+      {modal}
+    </div>
+  );
+}
+```
+
+## 활용 사례
+
+- **이미지/비디오 갤러리**: 썸네일 클릭 시 모달로 확대
+- **제품 상세**: 목록에서 빠른 미리보기
+- **로그인 폼**: 페이지 이동 없이 오버레이로 표시
+- **댓글/리뷰**: 인라인 확장 뷰
+
+**Intercepting Routes**는 사용자 경험을 크게 향상시킬 수 있는 강력한 기능으로, URL 기반의 자연스러운 네비게이션을 유지하면서도 SPA와 같은 부드러운 인터랙션을 제공합니다.
+
+### 참고 자료
+[Next.js - Intercepting Routes](https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes)<br/>
+[Next.js - Parallel Routes](https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes)
