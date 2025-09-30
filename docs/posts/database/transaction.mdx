@@ -5,7 +5,7 @@ language: 'SQL'
 tags:
   - Database
   - Transaction
-dateModified: 2025-09-21
+dateModified: 2025.09.21
 ---
 
 # 트랜잭션(Transaction)이란?
@@ -79,7 +79,7 @@ rollback to savepoint SP1; -- SP1 이후 작업만 취소
 트랜잭션이 완료되면 시스템 장애가 발생하더라도 결과는 유지되어야 합니다.
 이를 위해 Write Ahead Logging(WAL) 같은 기술이 사용됩니다.
 
-# 관련 개념 정리
+# 추가 단어 개념 정리
 - rollback : 실행된 트랜잭션을 취소하고 이전 상태로 되돌리는 것을 의미합니다.
 - savepoint : 트랜잭션 중간에 되돌아갈 지점을 지정하는 것을 의미합니다. ROLLBACK TO 명령으로 해당 시점 이후 작업만 취소가 가능합니다.
 - trigger : 특정 이벤트(insert, update, delete 등)가 발생했을 때 자동으로 실행되는 SQL 코드입니다. 일관성 유지에 활용됩니다.
