@@ -1,0 +1,166 @@
+---
+title: Java Observer 패턴의 정의와 구현
+type: 'concept'
+language: java
+tags:
+  - java
+dateModified: 2025.09.28
+---
+
+# Java Observer 패턴
+
+Observer 패턴은 한 객체의 상태가 변경되었을 때, 그 객체에 의존하는 다른 객체들에게 자동으로 알림을 보내는 디자인 패턴입니다. 발행/구독 모델과 밀접한 관련이 있으며, 객체 간의 느슨한 결합을 통해 유연하고 확장 가능한 시스템을 구축할 수 있게 해줍니다. YouTube 구독 시스템처럼 일대다 관계에서 상태 변화를 효율적으로 전파해야 할 때 사용됩니다.
+
+## 장단점
+
+### 장점
+- 느슨한 결합: Subject와 Observer 간의 의존도가 낮아 서로 독립적으로 수정이 가능합니다.
+- 동적 관계 설정: 런타임에 Observer를 추가하거나 제거할 수 있어 유연성이 높습니다.
+- 개방-폐쇄 원칙: 기존 코드를 수정하지 않고 새로운 Observer를 추가할 수 있습니다.
+- 재사용성: Observer와 Subject를 다른 시스템에서 재사용할 수 있습니다.
+
+### 단점
+- 성능 이슈: Observer가 많아질수록 알림 처리 시간이 증가할 수 있습니다.
+- 메모리 누수 가능성: Observer 제거를 제대로 하지 않으면 메모리 누수가 발생할 수 있습니다.
+- 예측하기 어려운 업데이트: Observer 간의 실행 순서를 보장할 수 없어 디버깅이 어려울 수 있습니다.
+
+## 구성 요소
+
+- Subject: 관찰 대상이 되는 주체 인터페이스로, Observer를 등록/제거하고 알림을 보내는 기능을 정의합니다.
+- Observer: 변화를 감지하고 반응하는 관찰자 인터페이스로, Subject로부터 알림을 받을 때 실행할 메서드를 정의합니다.
+- ConcreteSubject: 실제 상태를 가지는 구체적인 주체 클래스로, 상태가 변경될 때 모든 Observer에게 알림을 전송합니다.
+- ConcreteObserver: 구체적인 관찰자 클래스로, Subject로부터 알림을 받으면 특정 작업을 수행합니다.
+
+## 동작원리
+
+1. Observer가 자신을 Subject에 등록합니다.
+2. Subject의 상태가 변경되면 등록된 모든 Observer에게 알림을 전송합니다.
+3. 각 Observer는 알림을 받아 필요한 작업을 수행합니다.
+
+## 구현 예제
+
+### Observer 인터페이스
+패턴의 핵심인 인터페이스를 정의합니다. 모든 구독자 클래스가 구현해야 하는 update() 메서드를 포함합니다.
+
+```Java
+//1) 옵저버 인터페이스
+interface Observer {
+    void update(String message);
+}
+```
+
+
+### Subject 인터페이스
+관찰 대상이 되는 주체의 기본 행동을 정의합니다. 옵저버를 등록/제거하고 모든 옵저버에게 알림을 보내는 기능을 포함합니다.
+
+
+```Java
+// 2) Subject 인터페이스
+interface Subject {
+    // 관찰자 등록
+    void registerObserver(Observer observer);
+    // 관찰자 제거
+    void removeObserver(Observer observer);
+    // 관찰자에게 알림
+    void notifyObservers();
+}
+```
+
+
+### ConcreteSubject 구현
+YouTube 채널 역할을 하는 구체적인 Subject 클래스입니다. 구독자 목록을 관리하고, 새 영상이 업로드될 때 모든 구독자에게 알림을 전송합니다.
+```Java
+// 3) Subject를 구현하는 클래스
+class YouTubeChannel implements Subject {
+    private String channelName;
+    private List<Observer> observers;
+
+    public YouTubeChannel(String channelName) {
+        this.channelName = channelName;
+        this.observers = new ArrayList<>();
+    }
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for(Observer observer : observers) {
+            observer.update(channelName + ": 새로운 영상이 업로드 되었습니다.");
+        }
+    }
+
+    // 영상 업로드
+    public void uploadVideo() {
+        notifyObservers();
+    }
+}
+```
+
+### ConcreteObserver 구현
+실제 구독자 역할을 하는 구체적인 Observer 클래스입니다. 채널로부터 알림을 받으면 해당 메시지를 출력합니다.
+```Java
+// 4) 구체적인 Observer 클래스
+class Subscriber implements Observer {
+    private String name;
+    
+    public Subscriber(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public void update(String message) {
+        System.out.println(name + "님, 알림: " + message);
+    }
+}
+```
+
+
+#### 실행
+```Java
+public class ObserverDemo {
+    public static void main(String[] args) {
+        // 유튜브 채널 생성
+        YouTubeChannel channel = new YouTubeChannel("무한도전");
+
+        // 구독자
+        Subscriber subscriber1 = new Subscriber("유재석");
+        Subscriber subscriber2 = new Subscriber("박명수");
+
+        // 구독자 등록
+        channel.registerObserver(subscriber1);
+        channel.registerObserver(subscriber2);
+
+        // 새로운 영상 업로드
+        System.out.println("=== 첫 번째 영상 업로드 ===");
+        channel.uploadVideo();
+
+        // 구독취소 (박명수가 구독취소)
+        System.out.println("\n=== 박명수 구독 취소 ===");
+        channel.removeObserver(subscriber2);
+
+        // 새로운 영상 업로드
+        System.out.println("\n=== 두 번째 영상 업로드 ===");
+        channel.uploadVideo();
+    }
+}
+```
+
+#### 결과
+```Java
+=== 첫 번째 영상 업로드 ===
+유재석님, 알림: 무한도전: 새로운 영상이 업로드 되었습니다.
+박명수님, 알림: 무한도전: 새로운 영상이 업로드 되었습니다.
+
+=== 박명수 구독 취소 ===
+
+=== 두 번째 영상 업로드 ===
+유재석님, 알림: 무한도전: 새로운 영상이 업로드 되었습니다.
+```
