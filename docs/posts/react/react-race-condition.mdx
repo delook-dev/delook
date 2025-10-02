@@ -1,0 +1,220 @@
+---
+title: 'React에서 Race Condition 방지하기'
+type: 'concept'
+language: 'React'
+tags:
+  - React
+  - Race Condition
+dateModified: 2025.09.24
+---
+
+# React에서 Race Condition 방지하기
+
+## Race Condition
+
+Race Condition은 두 개 이상의 비동기 작업이 동시에 실행되면서 예상치 못한 결과가 적용되어 버그나 비일관성을 만드는 상황을 말합니다.
+
+서버 개발 혹은 네트워크 프로그래밍에서 주로 다루는 개념이나, 프론트엔드 환경에서도 발생할 수 있는 상황입니다.
+
+비동기 데이터 패칭과 상태 업데이트가 빈번하게 일어나는 프론트엔드 환경에서도 race condition을 적절히 방지하는 것이 중요합니다.
+
+<br />
+
+## 프론트엔드에서 Race Condition이 발생하는 상황 예시
+
+#### 1. 최신 데이터가 아닌 데이터가 노출되는 검색창
+
+```js
+function SearchComponent() {
+  const [query, setQuery] = useState('');
+  const [result, setResult] = useState('');
+
+  useEffect(() => {
+    if (!query) return;
+
+    // query가 바뀔 때마다 새로운 fetch 요청 발생
+    fetch(`/api/search?q=${query}`)
+      .then((res) => res.json())
+      .then((data) => {
+        // 응답이 도착하면 결과 업데이트
+        setResult(data.result);
+      });
+  }, [query]);
+
+  return (
+    <div>
+      <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="검색어 입력" />
+      <p>검색 결과: {result}</p>
+    </div>
+  );
+}
+```
+
+위와 같이 코드를 작성했을 때, query가 바뀔 때마다 요청하는 데이터의 응답 속도는 네트워크 환경에 따라 달라지게 됩니다.
+
+처음 입력한 검색어 '안녕' 보다 '안'의 요청에 대한 응답이 늦게 도착하는 경우, 최신 검색어인 '안녕'에 대한 결과가 아닌 '안'에 대한 결과가 화면에 표시됩니다.
+
+즉, 사용자에게 엉뚱한 결과가 노출되는 race condition이 발생합니다.
+
+#### 2. 페이지 전환 시 이전 페이지 데이터가 늦게 도착하는 경우
+
+```js
+function UserPage({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch(`/api/user/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setUser(data));
+  }, [userId]);
+
+  return (
+    <div>
+      <h1>사용자 정보</h1>
+      <pre>{JSON.stringify(user, null, 2)}</pre>
+    </div>
+  );
+}
+```
+
+위 상황에서 사용자가 userId=1 → userId=2로 빠르게 이동하면,
+/api/user/2 요청보다 /api/user/1 응답이 늦게 도착해 화면에 잘못된 유저 정보가 나타날 수 있습니다.
+
+<br />
+
+## React 환경에서 Race Condition 방지 방법
+
+#### 1. useEffect의 cleanUp 함수 사용하기
+
+React의 useEffect 내부에서는 콜백으로 직접 비동기 함수를 넣을 수 없습니다.
+
+```js
+// ❌ 잘못된 코드
+//'effect callbacks are synchronous to prevent race conditions. put the async function inside' 에러 발생
+
+useEffect(async () => {
+  const res = await fetch('/api/data');
+  const json = await res.json();
+  setData(json);
+}, []);
+```
+
+이는 React 팀에서 race condition 방지를 위해 의도적으로 막아둔 것입니다.
+
+useEffect 콜백 자체는 동기적이어야 하며, 비동기 처리는 내부에서 따로 호출해야 합니다.
+
+```js
+// ✅ 올바른 코드
+useEffect(() => {
+  let ignore = false;
+
+  async function fetchData() {
+    const res = await fetch('/api/data');
+    const json = await res.json();
+    if (!ignore) setData(json); // 최신 요청만 반영
+  }
+
+  fetchData();
+
+  return () => {
+    ignore = true; // cleanup으로 이전 요청 무시
+  };
+}, [id]);
+```
+
+위와 같이 useEffect의 콜백함수 내부에 비동기 함수를 넣어서 사용할 수 있습니다.
+
+다만 useEffect 내에 비동기 함수가 존재하면 내부에서 비동기 함수가 생성, 실행을 반복하므로 이전 비동기 함수에 대한 처리를 해주어야 합니다.
+
+여기서는 ignore 플래그를 사용해 클린업 시점 이후에 도착하는 응답은 무시하도록 했습니다.
+
+#### 2. Abort Controller로 이전 요청 취소하기
+
+fetch API는 AbortController를 지원합니다.
+
+이를 이용하면 컴포넌트가 언마운트되거나 의존성이 바뀔 때 이전 요청 자체를 취소할 수 있습니다.
+
+```js
+useEffect(() => {
+  const controller = new AbortController();
+
+  async function fetchData() {
+    try {
+      const res = await fetch(`/api/search?q=${query}`, {
+        signal: controller.signal,
+      });
+      const json = await res.json();
+      setResult(json);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error(err);
+      }
+    }
+  }
+
+  fetchData();
+
+  // cleanup 단계에서 이전 요청 취소
+  return () => {
+    controller.abort();
+  };
+}, [query]);
+```
+
+이렇게 하면 query가 바뀔 때마다 이전 요청은 자동 취소되므로, 뒤늦은 응답이 화면에 반영되지 않습니다.
+
+#### 3. unique id로 최신 요청만 반영하기
+
+비동기 요청마다 고유한 ID(ex: 타임스탬프)를 부여하고, 응답 시점에 '가장 최신 요청인지' 확인 후 상태를 반영합니다.
+
+```js
+const lastRequestId = useRef(0);
+
+useEffect(() => {
+  const requestId = Date.now();
+  lastRequestId.current = requestId;
+
+  async function fetchData() {
+    const res = await fetch(`/api/search?q=${query}`);
+    const json = await res.json();
+
+    if (lastRequestId.current === requestId) {
+      setResult(json);
+    }
+  }
+
+  fetchData();
+}, [query]);
+```
+
+이 방식은 AbortController를 지원하지 않는 환경에서 유용합니다.
+
+#### 4. 데이터 페칭 라이브러리 사용하기
+
+React Query, SWR과 같은 데이터 패칭 라이브러리를 사용할 수 있습니다.
+
+이러한 라이브러리들은 요청 중복/취소/최신화 관리 기능을 내장하고 있어 race condition의 위험을 줄여줍니다.
+
+```js
+// React Query 예시
+import { useQuery } from '@tanstack/react-query';
+
+function Search({ query }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['search', query],
+    queryFn: () => fetch(`/api/search?q=${query}`).then((res) => res.json()),
+    enabled: !!query, // query가 있을 때만 실행
+  });
+
+  if (isLoading) return <p>로딩 중...</p>;
+  return <p>검색 결과: {data.result}</p>;
+}
+```
+
+<br />
+
+## 정리
+
+- Race condition은 프론트엔드에서도 빈번히 발생하는 문제로, 올바른 관리 없이는 사용자 경험이 깨지거나 심각한 버그로 이어질 수 있으므로 항상 고려해야 합니다.
+
+- React에서는 AbortController, 요청 식별자(unique id) 관리, 혹은 React Query/SWR 같은 라이브러리를 통해 효과적으로 방지 가능합니다.
