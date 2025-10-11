@@ -5,10 +5,8 @@ language: Network
 tags:
   - Network
   - Proxy
-dateModified: 2025.10.11
+dateModified: 2025.10.12
 ---
-
-import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
 
 # 프록시란?
 
@@ -17,7 +15,7 @@ import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
 
 # 포워드 프록시 (Forward Proxy)
 
-<ImageContainer category="network" fileName="forward-proxy.png" alt="Forward Proxy" />
+`[클라이언트] → [포워드 프록시] → [인터넷] → [웹 서버]`
 
 - 클라이언트와 인터넷 사이에 위치합니다.
 - 클라이언트는 타겟 서버의 주소를 포워드 프록시에 전달하고, 포워드 프록시는 클라이언트를 대신해 해당 서버로 요청을 보내고 응답을 클라이언트에게 반환합니다.
@@ -40,7 +38,7 @@ import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
 
 # 리버스 프록시 (Reverse Proxy)
 
-<ImageContainer category="network" fileName="reverse-proxy.png" alt="Reverse Proxy" />
+`[클라이언트] → [인터넷] → [리버스 프록시] → [웹 서버]`
 
 - 서버와 인터넷 사이에 위치합니다.
 - 클라이언트는 리버스 프록시에 요청을 보내고, 리버스 프록시가 이를 원본 서버로 전달하고 받은 응답을 클라이언트에게 반환합니다.
