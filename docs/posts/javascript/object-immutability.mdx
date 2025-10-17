@@ -1,0 +1,176 @@
+---
+title: javascript에서 객체의 불변성을 유지하는 방법
+type: 'concept'
+language: JavaScript
+tags:
+  - Javascript
+dateModified: 2025.10.17
+---
+
+# javascript에서 객체의 불변성을 유지하는 방법
+
+## 객체의 불변성이란
+
+자바스크립트에서 객체는 참조형 데이터 타입으로, 불변성을 가진 원시 타입과는 달리 동일한 참조를 하고 있는 다른 객체에서도 객체 내부의 값을 변경하는 것이 가능합니다.
+
+객체의 불변성을 지킨다는 것은 객체의 원본 상태를 변경하지 않고, 새로운 객체를 만들어 사용하는 것을 말합니다.
+
+#### 객체의 불변성을 지키지 않으면 발생하는 문제 예시
+
+- 전역 상태 관리에서 자주 생기는 문제 (ex: Redux)
+
+```js
+const state = {
+  user: { name: 'Tom' },
+};
+
+const anotherRef = state.user;
+anotherRef.name = 'Jack'; // 원본 state.user도 함께 변경
+
+console.log(state.user.name); // "Jack"
+```
+
+- React는 얕은 비교(shallow compare)를 통해 상태 변경 여부를 판단하기 때문에, 원본 객체를 직접 변경하면 참조 값이 변하지 않아 렌더링이 일어나지 않을 수 있습니다.
+
+```js
+const [user, setUser] = useState({ name: 'Jade' });
+
+user.name = 'Kim'; // 원본 수정 — 객체가 직접 변경되어 React는 변화 감지 못함
+setUser(user);
+
+setUser({ ...user, name: 'Kim' }); // 새로운 객체 생성 — 변화 감지됨
+```
+
+위와 같은 문제 때문에 Redux에서 상태를 변경할 때는 반드시 새로운 객체를 만들어 반환해야 합니다.
+
+마찬가지로 React에서 상태를 직접 수정하지 않고 setState 함수를 사용하는 이유는 불변성을 유지하고 컴포넌트 렌더링을 올바르게 트리거하기 위해서입니다.
+
+<br />
+
+## 객체의 불변성을 지키기 위한 방법
+
+### 1. 내장 매서드 사용하기
+
+#### Object.freeze
+
+객체의 값을 수정하거나 추가하거나 삭제할 수 없습니다.
+
+```js
+const obj = { prop: 42 };
+
+Object.freeze(obj);
+
+obj.prop = 33;
+// Throws an error in strict mode
+
+console.log(obj.prop);
+// Expected output: 42
+```
+
+다만 Object.freeze는 얕은 동결만을 제공합니다.
+
+```js
+obj = {
+  internal: {},
+};
+
+Object.freeze(obj);
+obj.internal.a = 'aValue';
+
+obj.internal.a; // 'aValue' 로 변경 됨
+```
+
+#### Object.seal
+
+객체에 새로운 프로퍼티를 추가하거나 삭제할 수 없지만, 기존 프로퍼티의 값을 수정할 수는 있습니다.
+
+#### Object.preventExtensions
+
+새로운 프로퍼티의 추가만 막습니다.
+
+### 정리
+
+| 메서드                     | 값 수정 가능 | 속성 추가 가능 | 속성 삭제 가능 | 구조 고정 | 깊은 동결 |
+| -------------------------- | ------------ | -------------- | -------------- | --------- | --------- |
+| `Object.freeze`            | X            | X              | X              | O         | X         |
+| `Object.seal`              | O            | X              | X              | O         | X         |
+| `Object.preventExtensions` | O            | X              | O              | X         | X         |
+
+<br />
+
+### 2. 깊은 수준의 객체의 불변성을 지키기 위한 방법
+
+#### 재귀적으로 동결시키기
+
+객체를 불변하게 만들기 위해서는, 각 객체의 속성들을 재귀적으로 동결할 수 있습니다.
+
+```js
+function deepFreeze(obj) {
+  Object.getOwnPropertyNames(obj).forEach((key) => {
+    const value = obj[key];
+    if (typeof value === 'object' && value !== null) deepFreeze(value);
+  });
+  return Object.freeze(obj);
+}
+
+const frozen = deepFreeze({ nested: { x: 1 } });
+frozen.nested.x = 2;
+```
+
+#### immer, immutable.js 등의 불변성 옵션을 제공하는 라이브러리 사용하기
+
+- immer : 기존 JS 객체를 불변하게 다루는 것을 도와 주는 라이브러리
+
+```js
+import { produce } from 'immer';
+
+const state = { user: { name: 'Jade' } };
+
+const newState = produce(state, (draft) => {
+  draft.user.name = 'Kim';
+});
+
+console.log(state.user.name); // Jade
+console.log(newState.user.name); // Kim
+```
+
+-immutable.js : 불변 자료구조를 제공하는 라이브러리
+
+\*\* 주의 : immutable.js에서 제공하는 Map 자료구조는 javascript의 Map과는 역할과 용도가 다릅니다.
+
+```js
+import { Map } from 'immutable';
+
+const user = Map({ name: 'Tom', age: 27 });
+
+// 값 수정 시 원본을 변경하지 않고 새로운 객체를 반환
+const updatedUser = user.set('name', 'Jack');
+
+console.log(user.get('name')); // "Tom"
+console.log(updatedUser.get('name')); // "Jack"
+
+// 중첩 객체
+const nested = Map({
+  user: Map({
+    name: 'Tom',
+    profile: Map({ email: 'tom@example.com' }),
+  }),
+});
+
+const updatedNested = nested.setIn(['user', 'profile', 'email'], 'jack@example.com');
+
+console.log(nested.getIn(['user', 'profile', 'email']));
+// 원본 객체는 변경되지 않음 :  "tom@example.com"
+
+console.log(updatedNested.getIn(['user', 'profile', 'email']));
+// 변경된 객체 : "jack@example.com"
+```
+
+<br />
+
+## 정리
+
+- 자바스크립트 객체는 참조형 타입이기 때문에 한 곳에서 변경이 일어나면 다른 참조 지점에도 영향을 미칠 수 있습니다.
+- 불변성을 지키면 이러한 예기치 않은 사이드 이펙트를 방지할 수 있습니다.
+- 불변성을 지키는 방법: **내장 메서드 사용 / 재귀적 동결 / 라이브러리 활용(immer, Immutable.js)**
+- Object.freeze는 직렬화(JSON.stringify) 자체를 막지는 않지만, 라이브러리에서 데이터를 조작하는 경우 제약이 생길 수 있으므로 상황에 맞게 사용하는 것이 좋습니다.
