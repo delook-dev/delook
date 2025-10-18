@@ -1,0 +1,99 @@
+---
+title: 'HTTP 버전별 특징'
+type: 'concept'
+language: 'network'
+tags:
+  - HTTP
+  - Protocol
+dateModified: 2025.10.16
+---
+
+## HTTP 버전
+
+HTTP는 1.0부터 시작해 1.1, 2.0, 3.0에 이르기까지 계속해서 발전해왔습니다. 
+오늘은 HTTP 버전별 특징과 이전 버전의 단점을 어떻게 극복해 왔는지 살펴보겠습니다.
+
+### HTTP
+
+- HTTP (HyperText Transfer Protocol)은 월드 와이드 웹의 기반이 되는 프로토콜
+- HTTP의 변천사
+  - HTTP/0.9 : 원-라인 프로토콜
+  - HTTP/1.0 : 확장성 만들기
+  - HTTP/1.1 : 표준 프로토콜
+  - HTTP/2 : 더 나은 성능을 위한 프로토콜
+  - HTTP/3 : QUIC를 통한 HTTP
+
+### WWW (World Wide Web)
+
+- TCP/IP 프로토콜 기반의 하이퍼텍스트 시스템
+- 4개의 구성요소
+  - 하이퍼텍스트 문서를 표현하기 위한 텍스트 형식의 하이퍼텍스트 마크업 언어 (HTML)
+  - 하이퍼텍스트 문서를 교환하기 위한 '하이퍼텍스트 전송 프로토콜' (HTTP)
+  - 문서 읽기/쓰기를 위한 클라이언트인 '월드 와이드 웹(WorldWideWeb)'이라고 불리는 첫번째 브라우저
+  - 문서에 접근하도록 해주는 서버, 'httpd'의 초기 버전
+
+
+### HTTP/0.9
+
+- 요청은 단일 라인으로 구성되며 리소스에 대한 경로로 가능한 메서드는 `GET`만 존재
+- HTTP 헤더가 없었고, HTML 파일만 전송 가능
+
+### HTTP/1.0
+
+- 각 요청에 버전 정보가 포함되어 전송(HTTP/1.0이 GET 라인에 붙은 형태
+- 응답 값에 상태 코드 라인 추가
+- 요청 및 응답에 HTTP 개념 추가, 이로 인해 메타데이터 전송 가능
+- Content-Type이 추가되어 HTML 이외의 다른 타입의 문서도 전송 가능
+- 매 요청마다 새로운 TCP 연결을 맺고 끊어야 함
+
+```
+GET /mypage.html HTTP/1.0
+User-Agent: NCSA_Mosaic/2.0 (Windows 3.1)
+
+200 OK
+Date: Tue, 15 Nov 1994 08:12:31 GMT
+Server: CERN/3.0 libwww/2.17
+Content-Type: text/html
+<HTML>
+A page with an image
+  <IMG SRC="/myimage.gif">
+</HTML>
+```
+
+### HTTP/1.1
+
+- 동일 도메인 간 TCP 연결 유지 (지속연결) `Keep-Alive: timeout=5, max=1000`
+- 파이프라이닝 개념 도입
+  - 1개의 TCP 연결에 1:1 요청/응답만 가능했던 이전 버전에서 개선
+  - 단일 TCP 연결에서서 여러 개의 요청을 보내는 것이 가능
+
+- 단점
+  - HTTP 문서 내에 포함된 다수의 리소스 (image, css, script)를 처리하려면 요청할 리소스의 개수에 비례하여 Latency가 길어짐
+  - 클라이언트가 보낸 요청 순서와 동일하게 응답 순서를 맞춰야 함
+  - 이전 요청에 대한 응답이 지연될 경우 이후 응답 결과에 대한 처리가 지연 (Head of Line Blocking, HOL Blocking)
+  - RTT(Round Trip Time) 증가
+    - 커넥션 한 개에 요청 하나를 처리하는 특성 때문에 매번 요청 별로 connection을 만들게 되고 TCP 상에서 동작하는 HTTP의 특성상 3-way-handshake가 반복적으로 발생
+    - 불필요한 RTT 증가와 네트워크 지연을 초래하여 성능을 지연시킴
+
+### HTTP/2.0
+
+- HTTP1을 완전하게 재작성한 것이 아니라 프로토콜의 성능에 초점을 맞춰 수정한 버전. Latency나 네트워크, 서버 리소스 사용량 등과 같은 성능 위주로 개선
+- Multiplexed Stream 
+  - connection 1개로 동시에 여러 개의 메시지를 주고 받을 수 있으며, 응답은 순서에 상관없이 stream으로 주고 받음
+
+- Stream Prioritization 
+  - 리소스 간의 의존관계에 따른 우선순위를 설정하여 리소스 로드 문제를 해결 (ex. image 리소스보다 html 리소스 로드가 우선)
+
+- Header Compression
+  - HPACK 압축 방식으로 헤더를 압축하여 전송, 중복 헤더 내용의 경우 재전송 하지 않도록 처리
+
+- 단일 TCP 연결, 이로 인해 TCP 커넥션 지연 문제를 다소 해결할 수 있었으나, 패킷 손실 감지 및 재전송 시 모든 스트림 차단되는 단점 존재
+
+### HTTP/3.0
+
+- UDP 기반의 프로토콜인 QUIC(Quick UDP Internet Connection)을 사용
+- 여러 스트림을 실행하고 각 스트림에 대해 독립적으로 패킷 손실 감지 및 재전송하기 때문에 문제가 있는 스트림만 차단
+
+-----
+#### 참고문서
+[MDN HTTP의 진화](https://developer.mozilla.org/ko/docs/Web/HTTP/Guides/Evolution_of_HTTP)
