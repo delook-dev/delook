@@ -35,10 +35,8 @@ export const SidebarCollapsibleMenu = ({
   items,
   closeOnClick = true,
 }: SidebarCollapsibleMenuItemProps) => {
-  const isActive = items.some((item) => item.isActive);
-
   return (
-    <Collapsible defaultOpen={isActive} className="group/collapsible">
+    <Collapsible defaultOpen={true} className="group/collapsible">
       <SidebarMenuItem>
         {/* Parent Item */}
         <CollapsibleTrigger asChild>
