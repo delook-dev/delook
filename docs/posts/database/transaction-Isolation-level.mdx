@@ -1,0 +1,87 @@
+---
+title: 트랜잭션 격리 수준
+type: 'concept'
+language: Database
+tags:
+  - Database
+  - Transaction
+dateModified: 2025.09.28
+---
+
+import { ImageContainer } from '/src/components/ui/ImageContainer.tsx';
+
+# 트랜잭션 격리 수준(Transaction Isolation Level)이란?
+
+- 동시에 여러 트랜잭션이 처리될 때, 트랜잭션끼리 얼마나 서로 고립(격리)되어 있는지를 나타내는 것입니다.
+- 즉, 특정 트랜잭션이 다른 트랜잭션에서 변경한 데이터를 볼 수 있는지를 결정합니다.
+
+격리 수준은 크게 4가지로 나뉩니다.
+
+- Read Uncommitted (트렌젝션 레벨 0)
+- Read Committed (트렌젝션 레벨 1)
+- Repeatable Read (트렌젝션 레벨 2)
+- Serializable (트렌젝션 레벨 3)
+
+## Read Uncommitted
+
+- 다른 트랜잭션에서 커밋되지 않은 데이터를 읽을 수 있습니다.
+- 데이터 정합성에 심각한 문제가 발생할 수 있으므로, 일반적으로 사용을 권장하지 않습니다.
+- Dirty Read, Non-Repeatable Read, Phantom Read가 발생할 수 있습니다.
+
+## Read Committed
+
+- 다른 트랜잭션에서 커밋이 완료된 데이터만 읽을 수 있습니다.
+- 한 트랜잭션이 수행되는 동안 다른 트랜잭션은 대기합니다.
+- 대부분의 RDB에서 Default로 사용됩니다.
+- Dirty Read는 방지할 수 있으나, Non-Repeatable Read와 Phantom Read는 발생할 수 있습니다.
+
+## Repeatable Read
+
+- 트랜잭션이 시작되기 전에 커밋된 내용에 대해서만 읽을 수 있습니다.
+- MySQL에서 Default로 사용됩니다.
+- 새로운 레코드가 추가되는 경우에는 동일한 조회 결과를 보장하지 않으므로 Phantom Reads가 발생할 수 있습니다.
+
+## Serializable
+
+- 하나의 트랜잭션에서 사용하는 레코드는 다른 트랜잭션에서 절대 접근할 수 없습니다.
+- 가장 단순하면서도 엄격한 격리 수준으로, 데이터 정합성이 보장되지만 DB Lock이 많이 걸려 동시성이 가장 떨어집니다.
+
+# 트랜잭션의 이상 현상 (Anomaly)
+
+## Dirty Read
+
+- 한 트랜잭션에 의해 변경되었지만 아직 커밋되지 않은 데이터를 다른 트랜잭션에서 읽을 때 발생하는 현상입니다.
+- 이때 읽은 값이 롤백되면 잘못된 데이터가 반영되어 데이터 정합성 문제가 발생할 수 있습니다.
+
+<ImageContainer category="database" fileName="dirty-read.png" alt="Dirty Read 예시" />
+
+## Non-Repeatable Read
+
+- 한 트랜잭션 내에서 동일한 SELECT 쿼리를 두 번 실행했을 때, 그 결과가 서로 다르게 나타나는 현상입니다.
+
+<ImageContainer
+  category="database"
+  fileName="non-repeatable-read.png"
+  alt="배열에서 랜덤 요소 추출 예시"
+/>
+
+## Phantom Reads
+
+- 한 트랜잭션 안에서 같은 조건으로 두 번 읽을 때, 중간에 다른 트랜잭션이 데이터를 추가/삭제해서 결과가 달라지는 현상입니다.
+
+<ImageContainer
+  category="database"
+  fileName="phantom-read.png"
+  alt="배열에서 랜덤 요소 추출 예시"
+/>
+
+# 정리
+
+|                     | 설명                                                                                  | 해결 가능한 격리 수준 |
+| ------------------- | ------------------------------------------------------------------------------------- | --------------------- |
+| Dirty Read          | 커밋되지 않은 데이터를 다른 트랜잭션이 읽는 문제                                      | READ COMMITTED 이상   |
+| Non-Repeatable Read | 같은 데이터를 두 번 읽었을 때 값이 달라지는 문제                                      | REPEATABLE READ 이상  |
+| Phantom Read        | 같은 조건으로 조회했는데, 다른 트랜잭션이 데이터를 추가/삭제하여 결과가 달라지는 문제 | SERIALIZABLE          |
+
+- 격리 수준이 낮을수록 동시성(성능)은 높아지지만, 데이터 정합성이 떨어질 위험이 커집니다.
+- 격리 수준이 높을수록 데이터 정합성은 보장되지만, 성능이 저하될 수 있습니다.
