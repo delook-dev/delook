@@ -34,7 +34,7 @@ export default function BookmarkPage() {
     if (!post || !selectedPost) return null;
 
     return (
-      <PostSidebarLayout categoryList={categoryList}>
+      <PostSidebarLayout categoryList={categoryList} activePost={selectedPost.filename}>
         <RenderPost post={{ ...post, ...selectedPost }} />
       </PostSidebarLayout>
     );
