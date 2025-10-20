@@ -8,9 +8,11 @@ import { CategoryList } from '../types/postTypes';
 export const PostSidebarLayout = ({
   categoryList,
   children,
+  activePost,
 }: {
   categoryList: CategoryList[];
   children: React.ReactNode;
+  activePost?: string;
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -28,7 +30,7 @@ export const PostSidebarLayout = ({
       items={posts.map(({ filename, title }) => ({
         key: filename,
         title: title,
-        isActive: searchParams.get('filename') === filename,
+        isActive: searchParams.get('filename') === filename || activePost === filename,
         onClick: () => handleSearchParams(category, filename),
       }))}
     />
@@ -36,7 +38,7 @@ export const PostSidebarLayout = ({
 
   return (
     <SidebarLayout sidebarMenu={sidebarMenu}>
-      <div className="mx-auto max-w-3xl md:pl-6 md:pt-4">{children}</div>
+      <div className="mx-auto max-w-3xl md:px-6 md:pt-4">{children}</div>
     </SidebarLayout>
   );
 };

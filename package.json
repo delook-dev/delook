@@ -40,6 +40,7 @@
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-resizable-panels": "^3.0.6",
     "react-router-dom": "^7.4.1"
   },
   "devDependencies": {

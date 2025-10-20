@@ -30,7 +30,7 @@ export default function ArchivePage() {
         url={`${SITE_URL}/archive?category=${category}&filename=${filename}`}
         keywords={`${category}, ${title}, ${filename}`}
       />
-      <PostSidebarLayout categoryList={categoryList}>
+      <PostSidebarLayout categoryList={categoryList} activePost={selectedPost.filename}>
         <RenderPost post={{ ...post, ...selectedPost }} />
       </PostSidebarLayout>
     </>
