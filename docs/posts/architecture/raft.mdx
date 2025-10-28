@@ -24,7 +24,7 @@ RAFT에 설명하기에 앞서 클러스터 용어의 설명이 선행되어야 
 
 클러스터 내 노드는 리더(Leader)와 팔로워(Follower)로 구분되며, 리더는 주기적으로 하트비트(Heartbeat) 신호를 전송하여 팔로워의 상태를 모니터링하고 클러스터의 정상 동작을 유지합니다.
 
-<ImageContainer category="Architecture" fileName="raftcluster.png" alt="raft 예시 이미지" />
+<ImageContainer category="architecture" fileName="raftcluster.png" alt="raft 예시 이미지" />
 
 ## 리더 선거
 
@@ -36,7 +36,7 @@ RAFT에 설명하기에 앞서 클러스터 용어의 설명이 선행되어야 
 
 리더 선출이 성공적으로 완료되면 새 리더가 조정하는 정상적인 운영을 진행합니다.
 
-<ImageContainer category="Architecture" fileName="leaderElection.png" alt="리더 선거 예시 이미지" />
+<ImageContainer category="architecture" fileName="leaderElection.png" alt="리더 선거 예시 이미지" />
 
 ## 로그 복제
 
@@ -55,4 +55,5 @@ RAFT를 사용하면 다중 환경 시스템에서 클러스터 내의 고가용
 - IBM MQ
 - MongoDB
 - RabbitMQ
+
 - Apache Kafka (KRaft)
