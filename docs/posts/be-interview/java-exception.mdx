@@ -1,0 +1,30 @@
+---
+title: Java에서 Checked Exception과 Unchecked Exception에 대해서 설명해 주세요.
+type: 'interview'
+language: 'be-interview'
+tags:
+  - Java
+dateModified: 2025.10.05
+---
+
+## 답변
+
+Checked Exception은 컴파일할 때 예외 처리를 강제하는 예외입니다. 자바에서는 IOException, SQLException 등이 해당됩니다. <br />
+Checked Exception이 발생할 수 있는 메서드를 호출하는 경우, throws를 사용하여 호출자에게 예외를 위임하거나 try-catch 문을 통해 반드시 예외를 처리해야 합니다.
+
+Unchecked Exception은 컴파일할 때 예외 처리를 강제하지 않는 예외입니다. 자바에서는 RuntimeException을 상속하는 예외들이 해당됩니다. <br />
+주로 프로그래머의 실수나 코드 오류로 인해 발생하며, 별도의 예외 처리를 하지 않아도 컴파일이 가능합니다.
+
+### Q. 언제 사용해야 할까요?
+
+Checked Exception은 파일 입출력 오류, 데이터베이스 연결 실패 등 클라이언트가 예측하고 복구할 수 있는 예외에 적합합니다. <br />
+Uncheked Exception은 코드 오류, 논리적 결함 등 프로그래머의 실수로 발생하며 클라이언트가 복구할 수 없는 예외에 적합합니다.
+
+### 정리
+
+| 구분              | Checked Exception                | Unchecked Exception                                    |
+| :---------------- | :------------------------------- | :----------------------------------------------------- |
+| **확인 시점**     | 컴파일 시점                      | 런타임 시점                                            |
+| **처리 여부**     | 반드시 예외를 처리해야 함        | 명시적으로 예외를 처리하지 않아도 됨                   |
+| **트랜잭션 처리** | 예외 발생 시 Rollback 되지 않음  | 예외 발생 시 Rollback 됨                               |
+| **종류**          | `IOException`, `SQLException` 등 | `NullPointerException`, `IndexOutOfBoundsException` 등 |
